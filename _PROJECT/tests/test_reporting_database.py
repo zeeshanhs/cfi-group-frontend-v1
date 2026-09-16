@@ -113,7 +113,7 @@ class ReportingDatabaseTests(unittest.TestCase):
                     "WHERE type = 'table' AND name NOT LIKE 'sqlite_%'"
                 )
             }
-            self.assertEqual(set(expected_columns), tables)
+            self.assertTrue(set(expected_columns).issubset(tables))
 
             for spec in loader.TABLE_SPECS:
                 table_info = connection.execute(
@@ -288,6 +288,73 @@ class ReportingDatabaseTests(unittest.TestCase):
                 for spec in loader.TABLE_SPECS
             }
         self.assertEqual(before, after)
+
+    def test_successful_refresh_preserves_application_tables(self) -> None:
+        with self.connect() as connection:
+            connection.execute(
+                "CREATE TABLE chat_preservation_probe ("
+                "id TEXT PRIMARY KEY, body TEXT NOT NULL)"
+            )
+            connection.execute(
+                "INSERT INTO chat_preservation_probe (id, body) VALUES (?, ?)",
+                ("chat_demo", "saved conversation"),
+            )
+            connection.commit()
+
+        loader.build_database(SOURCE_DIR, self.output_path)
+
+        with self.connect() as connection:
+            self.assertEqual(
+                [("chat_demo", "saved conversation")],
+                connection.execute(
+                    "SELECT id, body FROM chat_preservation_probe"
+                ).fetchall(),
+            )
+
+    def test_failed_refresh_preserves_reporting_and_application_data(self) -> None:
+        temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(temporary.cleanup)
+        root = Path(temporary.name)
+        input_dir = root / "input"
+        self.copy_sources(input_dir)
+        output_path = root / "existing.sqlite"
+        loader.build_database(input_dir, output_path)
+
+        with sqlite3.connect(output_path) as connection:
+            connection.execute(
+                "CREATE TABLE chat_preservation_probe ("
+                "id TEXT PRIMARY KEY, body TEXT NOT NULL)"
+            )
+            connection.execute(
+                "INSERT INTO chat_preservation_probe (id, body) VALUES (?, ?)",
+                ("chat_demo", "saved conversation"),
+            )
+            reporting_rows = connection.execute(
+                "SELECT * FROM rpt_new_jobs_opened ORDER BY job_id"
+            ).fetchall()
+            connection.commit()
+
+        source = self.source_copy_for_prefix(input_dir, "job_cost_change_orders_")
+        rows = read_csv(source)
+        rows[1][rows[0].index("co_date")] = "invalid"
+        write_csv(source, rows)
+
+        with self.assertRaises(loader.BuildError):
+            loader.build_database(input_dir, output_path)
+
+        with sqlite3.connect(output_path) as connection:
+            self.assertEqual(
+                reporting_rows,
+                connection.execute(
+                    "SELECT * FROM rpt_new_jobs_opened ORDER BY job_id"
+                ).fetchall(),
+            )
+            self.assertEqual(
+                [("chat_demo", "saved conversation")],
+                connection.execute(
+                    "SELECT id, body FROM chat_preservation_probe"
+                ).fetchall(),
+            )
 
     def test_renamed_header_is_rejected(self) -> None:
         temporary, input_dir = self.mutated_input_dir(

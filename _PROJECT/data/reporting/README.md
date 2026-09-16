@@ -33,7 +33,9 @@ python3 -m unittest _PROJECT.tests.test_reporting_database
 python3 _PROJECT/scripts/build_reporting_database.py
 ```
 
-The default build reads `_PROJECT/tasks/BOOT-000/input/` and atomically creates or replaces `_PROJECT/data/reporting/cfi_reporting.sqlite`.
+The default build reads `_PROJECT/tasks/BOOT-000/input/` and transactionally
+refreshes the three reporting-owned tables in
+`_PROJECT/data/reporting/cfi_reporting.sqlite`.
 
 To build from another directory or write to a temporary database:
 
@@ -49,9 +51,22 @@ The selected input directory must contain exactly one `.csv` file for each prefi
 - `job_cost_change_orders_`
 - `rpt_new_jobs_opened_`
 
-The loader validates exact ordered headers, parses and normalizes every field, creates all three tables in a temporary database, checks row counts and SQLite integrity, closes the database, and only then replaces the destination. If parsing, constraints, validation, or publication fails, a pre-existing valid destination is left unchanged.
+The loader validates exact ordered headers and parses every source row before it
+opens the destination. It then stages and validates all three reporting tables
+inside one SQLite transaction, replaces only those reporting-owned tables,
+recreates their indexes, and checks row counts and database integrity before
+commit. A failed parse, constraint, validation, or publication rolls the
+transaction back, preserving both the previous reporting snapshot and every
+application-owned table.
 
-For a future refresh, place one new extract for each prefix in a separate input directory and use `--input-dir`. Do not add a second matching file to the default input directory. The loader rebuilds a complete snapshot; it does not append history.
+Data Insights Chat owns its `chat_*` tables and schema-migration records in the
+same database. Reporting refreshes must not drop, copy, reseed, or otherwise
+rewrite those tables. Application migrations are idempotent and run from the
+Next.js server boundary. Automated tests that mutate either reporting or chat
+data use a temporary database or an explicit server-only absolute-path override;
+they never write to the checked-in database.
+
+For a future refresh, place one new extract for each prefix in a separate input directory and use `--input-dir`. Do not add a second matching file to the default input directory. The loader replaces the complete reporting snapshot; it does not append reporting history and does not replace the SQLite file itself.
 
 ## Query with sqlite3
 

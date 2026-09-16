@@ -3,10 +3,10 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: {
-    default: "CFI Group Reports",
-    template: "%s | CFI Group Reports",
+    default: "CFI Group",
+    template: "%s | CFI Group",
   },
-  description: "Internal reporting views for CFI Group.",
+  description: "CFI Group reporting and synthetic Data Insights experiences.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

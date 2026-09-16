@@ -33,8 +33,18 @@ input {
 }
 
 button,
-input {
+input,
+textarea {
   font: inherit;
+}
+
+textarea {
+  outline-color: transparent;
+}
+
+textarea:focus-visible {
+  outline: var(--ce-focus-width) solid var(--ce-color-focus);
+  outline-offset: var(--ce-focus-offset);
 }
 
 @page {

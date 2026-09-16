@@ -5,10 +5,8 @@ from __future__ import annotations
 
 import argparse
 import csv
-import os
 import sqlite3
 import sys
-import tempfile
 from dataclasses import dataclass
 from datetime import datetime
 from decimal import Decimal, InvalidOperation
@@ -306,7 +304,7 @@ def read_source_rows(source_file: Path, spec: TableSpec) -> list[tuple[object | 
         raise BuildError(f"Unable to read source CSV {source_file}: {error}") from error
 
 
-def _create_table_sql(spec: TableSpec) -> str:
+def _create_table_sql(spec: TableSpec, *, table_name: str | None = None) -> str:
     definitions: list[str] = []
     for item in spec.columns:
         nullability = "" if item.nullable else " NOT NULL"
@@ -314,7 +312,8 @@ def _create_table_sql(spec: TableSpec) -> str:
     primary_key = ", ".join(f'"{name}"' for name in spec.primary_key)
     definitions.append(f"PRIMARY KEY ({primary_key})")
     body = ",\n    ".join(definitions)
-    return f'CREATE TABLE "{spec.table_name}" (\n    {body}\n)'
+    resolved_name = table_name or spec.table_name
+    return f'CREATE TABLE "{resolved_name}" (\n    {body}\n)'
 
 
 def _create_index_sql(table_name: str, index: IndexSpec) -> str:
@@ -328,30 +327,35 @@ def _insert_sql(spec: TableSpec) -> str:
     return f'INSERT INTO "{spec.table_name}" ({column_names}) VALUES ({placeholders})'
 
 
-def _validate_database(
+def _validate_reporting_tables(
     connection: sqlite3.Connection,
     expected_counts: dict[str, int],
+    table_names: dict[str, str] | None = None,
 ) -> None:
+    resolved_names = table_names or {
+        spec.table_name: spec.table_name for spec in TABLE_SPECS
+    }
     actual_tables = {
         row[0]
         for row in connection.execute(
             "SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%'"
         )
     }
-    expected_tables = {spec.table_name for spec in TABLE_SPECS}
-    if actual_tables != expected_tables:
+    expected_tables = set(resolved_names.values())
+    missing_tables = expected_tables - actual_tables
+    if missing_tables:
         raise BuildError(
-            f"Unexpected database table set: expected {sorted(expected_tables)!r}, "
-            f"got {sorted(actual_tables)!r}"
+            f"Missing reporting table(s): {sorted(missing_tables)!r}"
         )
 
-    for table_name, expected_count in expected_counts.items():
+    for logical_name, expected_count in expected_counts.items():
+        table_name = resolved_names[logical_name]
         actual_count = connection.execute(
             f'SELECT COUNT(*) FROM "{table_name}"'
         ).fetchone()[0]
         if actual_count != expected_count:
             raise BuildError(
-                f"Unexpected row count for {table_name}: "
+                f"Unexpected row count for {logical_name}: "
                 f"expected {expected_count}, got {actual_count}"
             )
 
@@ -375,39 +379,48 @@ def build_database(input_dir: Path, output_path: Path) -> dict[str, int]:
     except OSError as error:
         raise BuildError(f"Unable to create output directory {output_path.parent}: {error}") from error
 
-    file_descriptor: int | None = None
-    temporary_path: Path | None = None
+    destination_existed = output_path.exists()
+    build_succeeded = False
     connection: sqlite3.Connection | None = None
     try:
-        file_descriptor, temporary_name = tempfile.mkstemp(
-            prefix=f".{output_path.name}.",
-            suffix=".tmp",
-            dir=output_path.parent,
-        )
-        os.close(file_descriptor)
-        file_descriptor = None
-        temporary_path = Path(temporary_name)
-
-        connection = sqlite3.connect(temporary_path)
-        connection.execute("BEGIN")
+        connection = sqlite3.connect(output_path)
+        connection.execute("PRAGMA foreign_keys = ON")
+        connection.execute("BEGIN IMMEDIATE")
+        staging_names = {
+            spec.table_name: f"__reporting_stage_{spec.table_name}"
+            for spec in TABLE_SPECS
+        }
         for spec in TABLE_SPECS:
-            connection.execute(_create_table_sql(spec))
+            staging_name = staging_names[spec.table_name]
+            connection.execute(_create_table_sql(spec, table_name=staging_name))
             try:
-                connection.executemany(_insert_sql(spec), loaded_rows[spec.table_name])
+                insert_sql = _insert_sql(spec).replace(
+                    f'INSERT INTO "{spec.table_name}"',
+                    f'INSERT INTO "{staging_name}"',
+                    1,
+                )
+                connection.executemany(insert_sql, loaded_rows[spec.table_name])
             except sqlite3.IntegrityError as error:
                 raise BuildError(
                     f"Database constraint failed while loading {spec.table_name}: {error}"
                 ) from error
+
+        _validate_reporting_tables(connection, expected_counts, staging_names)
+
+        for spec in TABLE_SPECS:
+            connection.execute(f'DROP TABLE IF EXISTS "{spec.table_name}"')
+            connection.execute(
+                f'ALTER TABLE "{staging_names[spec.table_name]}" '
+                f'RENAME TO "{spec.table_name}"'
+            )
             for index in spec.indexes:
                 connection.execute(_create_index_sql(spec.table_name, index))
 
-        _validate_database(connection, expected_counts)
+        _validate_reporting_tables(connection, expected_counts)
         connection.commit()
         connection.close()
         connection = None
-
-        os.replace(temporary_path, output_path)
-        temporary_path = None
+        build_succeeded = True
         return expected_counts
     except BuildError:
         if connection is not None:
@@ -420,11 +433,9 @@ def build_database(input_dir: Path, output_path: Path) -> dict[str, int]:
     finally:
         if connection is not None:
             connection.close()
-        if file_descriptor is not None:
-            os.close(file_descriptor)
-        if temporary_path is not None:
+        if not build_succeeded and not destination_existed and output_path.exists():
             try:
-                temporary_path.unlink(missing_ok=True)
+                output_path.unlink()
             except OSError:
                 pass
 
