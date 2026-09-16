@@ -6,19 +6,29 @@ First, run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+The report index is available at [http://localhost:3000/reports](http://localhost:3000/reports).
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Weekly sales PDF runtime
+
+The weekly sales report uses Puppeteer to print the same Next.js report route as
+a one-page PDF. Local development automatically uses the current localhost
+origin. In a non-local or production environment, set `REPORT_RENDER_ORIGIN` to
+the application origin that the server-side browser can reach, for example:
+
+```bash
+REPORT_RENDER_ORIGIN=https://reports.example.com npm run start
+```
+
+The configured value must be an HTTP or HTTPS origin. The PDF endpoint always
+uses the fixed `/reports/weekly-sales?print=1` path and does not accept a
+caller-supplied render URL.
+
+Run the focused report tests with `npm test`, lint with `npm run lint`, and
+create a production build with `npm run build`.
 
 ## Learn More
 
