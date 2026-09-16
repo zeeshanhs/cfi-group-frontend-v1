@@ -1,0 +1,594 @@
+version: 1
+name: cfi_local_reporting
+description: >-
+  Semantic metadata for the repository-local SQLite snapshot built from three
+  supplied Gold-layer reporting extracts. This is not a live warehouse
+  connection and must not be used to imply coverage beyond the loaded rows.
+
+database:
+  dialect: sqlite
+  path: "_PROJECT/data/reporting/cfi_reporting.sqlite"
+  generated_by: "_PROJECT/scripts/build_reporting_database.py"
+
+sources:
+  - name: account_manager_summary_20260914
+    file: "_PROJECT/tasks/BOOT-000/input/account_manager_summary_20260914.csv"
+    filename_prefix: "account_manager_summary_"
+    table: account_manager_summary
+    record_count: 26
+    filename_indicated_snapshot: "2026-09-14"
+    observed_coverage:
+      report_period_start:
+        min: "2026-01-01"
+        max: "2026-01-01"
+      report_period_end:
+        min: "2026-12-31"
+        max: "2026-12-31"
+    caveat: >-
+      sales_last_7_days is pre-aggregated in the source. The exact seven-day
+      start and end are not present in the extract and must not be inferred
+      from the annual report-period columns.
+
+  - name: job_cost_change_orders_20260907_20260913
+    file: "_PROJECT/tasks/BOOT-000/input/job_cost_change_orders_20260907_20260913.csv"
+    filename_prefix: "job_cost_change_orders_"
+    table: job_cost_change_orders
+    record_count: 6
+    filename_indicated_period:
+      start: "2026-09-07"
+      end: "2026-09-13"
+    observed_coverage:
+      co_date:
+        min: "2026-08-12"
+        max: "2026-09-09"
+      modified_on:
+        min: "2026-09-08 07:51:00"
+        max: "2026-09-09 19:48:00"
+    caveat: >-
+      The filename's nominal week does not equal the observed co_date range.
+      Use co_date for business-period questions and modified_on only when the
+      question explicitly concerns modification activity.
+
+  - name: rpt_new_jobs_opened_20260907_20260913
+    file: "_PROJECT/tasks/BOOT-000/input/rpt_new_jobs_opened_20260907_20260913.csv"
+    filename_prefix: "rpt_new_jobs_opened_"
+    table: rpt_new_jobs_opened
+    record_count: 4
+    filename_indicated_period:
+      start: "2026-09-07"
+      end: "2026-09-13"
+    observed_coverage:
+      opened_date:
+        min: "2026-09-09"
+        max: "2026-09-10"
+    caveat: >-
+      Only two opened dates occur in the loaded rows. This extract alone does
+      not support a complete weekly or monthly trend.
+
+null_handling:
+  source_null_markers:
+    - "[NULL]"
+    - "empty or whitespace-only field"
+  sqlite_representation: "SQL NULL"
+  literal_values:
+    - value: "NONE"
+      handling: >-
+        Preserve as a literal category. It is not SQL NULL. It currently
+        appears as an account-manager/project-class code, a sales_id, and a
+        bd_linked value.
+
+tables:
+  - name: account_manager_summary
+    description: >-
+      Source-provided account-manager/project-class sales and receivables
+      summary for one supplied snapshot.
+    source: account_manager_summary_20260914
+    grain: "One row per project_class_id in the supplied snapshot."
+    primary_key:
+      - project_class_id
+    default_time_dimension: report_period_end
+    other_time_dimensions:
+      - report_period_start
+    dimensions:
+      - project_class_id
+      - project_class_name
+      - sort_order
+      - report_period_start
+      - report_period_end
+    additive_measures:
+      scope: >-
+        Candidate additive measures across distinct project_class_id rows in
+        this one snapshot. Do not sum them across snapshots or reporting
+        periods without additional snapshot keys and confirmed business rules.
+      fields:
+        - sales_prior_year
+        - sales_current_year
+        - sales_reporting_year
+        - sales_last_7_days
+        - sales_reporting_year_ytd
+        - sales_prior_year_ytd
+        - ar_outstanding
+        - pending_contract
+        - eoy_projected_sales
+        - contract_value_closed_current
+        - contract_value_closed_prior
+        - var_sales_ytd_actual
+        - var_sales_projected
+    aliases:
+      - account manager summary
+      - sales manager summary
+      - salesperson summary
+    caveats:
+      - >-
+        project_class_id is used as the account-manager code in this extract,
+        but the source name indicates it is formally a project-class field.
+      - >-
+        The business distinction among sales_current_year,
+        sales_reporting_year, and sales_reporting_year_ytd is not supplied.
+        Their current values happen to match and must not be assumed
+        interchangeable.
+      - >-
+        Source currency is not explicitly confirmed. Monetary columns use the
+        unit label "currency (source currency not explicitly confirmed)."
+    columns:
+      - name: project_class_id
+        physical_type: TEXT
+        nullable: false
+        semantic_role: identifier
+        description: "Source project-class identifier used as the account-manager code in this extract."
+        aliases:
+          - account manager code
+          - sales id
+      - name: project_class_name
+        physical_type: TEXT
+        nullable: false
+        semantic_role: dimension
+        description: "Source project-class display name, used as the account-manager name in this extract."
+        aliases:
+          - account manager
+          - salesperson
+          - manager name
+      - name: sort_order
+        physical_type: INTEGER
+        nullable: true
+        semantic_role: dimension
+        description: "Optional source-provided display order."
+        format: integer
+      - name: sales_prior_year
+        physical_type: REAL
+        nullable: false
+        semantic_role: measure
+        description: "Source-provided prior-year sales amount; exact period definition is unconfirmed."
+        unit: "currency (source currency not explicitly confirmed)"
+        default_aggregation: sum
+        aliases:
+          - prior year sales
+      - name: sales_current_year
+        physical_type: REAL
+        nullable: false
+        semantic_role: measure
+        description: "Source-provided current-year sales amount; exact distinction from reporting-year fields is unconfirmed."
+        unit: "currency (source currency not explicitly confirmed)"
+        default_aggregation: sum
+        aliases:
+          - current year sales
+      - name: sales_reporting_year
+        physical_type: REAL
+        nullable: false
+        semantic_role: measure
+        description: "Source-provided reporting-year sales amount; exact business definition is unconfirmed."
+        unit: "currency (source currency not explicitly confirmed)"
+        default_aggregation: sum
+        aliases:
+          - reporting year sales
+      - name: sales_last_7_days
+        physical_type: REAL
+        nullable: false
+        semantic_role: measure
+        description: "Source-pre-aggregated sales for an unspecified seven-day window associated with the snapshot."
+        unit: "currency (source currency not explicitly confirmed)"
+        default_aggregation: sum
+        aliases:
+          - last 7 days sales
+          - last week sales
+          - weekly sales
+        caveat: "The precise seven-day date boundary is unavailable."
+      - name: sales_reporting_year_ytd
+        physical_type: REAL
+        nullable: false
+        semantic_role: measure
+        description: "Source-provided reporting-year-to-date sales amount; calendar/fiscal rules are unconfirmed."
+        unit: "currency (source currency not explicitly confirmed)"
+        default_aggregation: sum
+        aliases:
+          - year to date sales
+          - YTD sales
+      - name: sales_prior_year_ytd
+        physical_type: REAL
+        nullable: false
+        semantic_role: measure
+        description: "Source-provided prior-year-to-date sales amount; calendar/fiscal rules are unconfirmed."
+        unit: "currency (source currency not explicitly confirmed)"
+        default_aggregation: sum
+        aliases:
+          - prior year YTD sales
+      - name: ar_outstanding
+        physical_type: REAL
+        nullable: false
+        semantic_role: measure
+        description: "Source-provided outstanding accounts-receivable amount."
+        unit: "currency (source currency not explicitly confirmed)"
+        default_aggregation: sum
+        aliases:
+          - outstanding AR
+          - accounts receivable
+      - name: pending_contract
+        physical_type: REAL
+        nullable: false
+        semantic_role: measure
+        description: "Source-provided pending-contract amount."
+        unit: "currency (source currency not explicitly confirmed)"
+        default_aggregation: sum
+        aliases:
+          - pending contracts
+      - name: eoy_projected_sales
+        physical_type: REAL
+        nullable: false
+        semantic_role: measure
+        description: "Source-provided projected end-of-year sales amount."
+        unit: "currency (source currency not explicitly confirmed)"
+        default_aggregation: sum
+        aliases:
+          - projected sales
+          - end of year projected sales
+      - name: contract_value_closed_current
+        physical_type: REAL
+        nullable: false
+        semantic_role: measure
+        description: "Source-provided closed-contract value for the current comparison period."
+        unit: "currency (source currency not explicitly confirmed)"
+        default_aggregation: sum
+        aliases:
+          - current closed contract value
+      - name: contract_value_closed_prior
+        physical_type: REAL
+        nullable: false
+        semantic_role: measure
+        description: "Source-provided closed-contract value for the prior comparison period."
+        unit: "currency (source currency not explicitly confirmed)"
+        default_aggregation: sum
+        aliases:
+          - prior closed contract value
+      - name: var_sales_ytd_actual
+        physical_type: REAL
+        nullable: false
+        semantic_role: measure
+        description: "Source-provided actual/YTD sales variance; the official formula is unconfirmed."
+        unit: "currency (source currency not explicitly confirmed)"
+        default_aggregation: sum
+        aliases:
+          - actual sales variance
+          - YTD sales variance
+      - name: var_sales_projected
+        physical_type: REAL
+        nullable: false
+        semantic_role: measure
+        description: "Source-provided projected-sales variance; the official formula is unconfirmed."
+        unit: "currency (source currency not explicitly confirmed)"
+        default_aggregation: sum
+        aliases:
+          - projected sales variance
+      - name: report_period_start
+        physical_type: TEXT
+        nullable: false
+        semantic_role: time_dimension
+        description: "Start of the source reporting period attached to the summary row."
+        format: "ISO 8601 date (YYYY-MM-DD)"
+      - name: report_period_end
+        physical_type: TEXT
+        nullable: false
+        semantic_role: time_dimension
+        description: "End of the source reporting period attached to the summary row."
+        format: "ISO 8601 date (YYYY-MM-DD)"
+
+  - name: job_cost_change_orders
+    description: "Job change-order adjustments from the supplied reporting extract."
+    source: job_cost_change_orders_20260907_20260913
+    grain: "One row per job_id and co_number pair in the supplied extract."
+    primary_key:
+      - job_id
+      - co_number
+    default_time_dimension: co_date
+    other_time_dimensions:
+      - modified_on
+    dimensions:
+      - job_id
+      - job_description
+      - co_number
+      - co_date
+      - co_status
+      - owner_co_number
+      - modified_on
+    additive_measures:
+      scope: "Additive across distinct change-order rows within a selected co_date range."
+      fields:
+        - total_income_adj
+    aliases:
+      - change orders
+      - job change orders
+      - contract adjustments
+    caveats:
+      - "The observed co_status code A is not expanded because its business definition was not supplied."
+      - "The filename range must not be substituted for co_date coverage."
+      - "Source currency is not explicitly confirmed."
+    columns:
+      - name: job_id
+        physical_type: TEXT
+        nullable: false
+        semantic_role: identifier
+        description: "Source job identifier, stored as text to preserve identifier semantics."
+        aliases:
+          - job number
+      - name: job_description
+        physical_type: TEXT
+        nullable: false
+        semantic_role: dimension
+        description: "Source description of the job associated with the change order."
+        aliases:
+          - job name
+      - name: co_number
+        physical_type: INTEGER
+        nullable: false
+        semantic_role: identifier
+        description: "Change-order number within the job."
+        format: integer
+        aliases:
+          - change order number
+      - name: co_date
+        physical_type: TEXT
+        nullable: false
+        semantic_role: time_dimension
+        description: "Business date of the change order and the preferred field for reporting-period filters."
+        format: "ISO 8601 date (YYYY-MM-DD)"
+        aliases:
+          - change order date
+      - name: co_status
+        physical_type: TEXT
+        nullable: false
+        semantic_role: dimension
+        description: "Source change-order status code; code meanings require business confirmation."
+        aliases:
+          - change order status
+      - name: owner_co_number
+        physical_type: INTEGER
+        nullable: true
+        semantic_role: dimension
+        description: "Optional source owner change-order number; exact business use is unconfirmed."
+        format: integer
+        aliases:
+          - owner change order number
+      - name: total_income_adj
+        physical_type: REAL
+        nullable: false
+        semantic_role: measure
+        description: "Source-provided total income adjustment for the change order."
+        unit: "currency (source currency not explicitly confirmed)"
+        default_aggregation: sum
+        aliases:
+          - change order amount
+          - income adjustment
+      - name: modified_on
+        physical_type: TEXT
+        nullable: false
+        semantic_role: time_dimension
+        description: "Timestamp when the source change-order record was modified."
+        format: "ISO 8601 timestamp (YYYY-MM-DD HH:MM:SS), timezone not supplied"
+        aliases:
+          - modification time
+
+  - name: rpt_new_jobs_opened
+    description: "Newly opened jobs from the supplied reporting extract."
+    source: rpt_new_jobs_opened_20260907_20260913
+    grain: "One row per job_id in the supplied extract."
+    primary_key:
+      - job_id
+    default_time_dimension: opened_date
+    other_time_dimensions: []
+    dimensions:
+      - job_id
+      - job_label
+      - customer_name
+      - sales_id
+      - city
+      - state
+      - opened_date
+      - bd_linked
+    additive_measures:
+      scope: "Additive across distinct job_id rows within a selected opened_date range."
+      fields:
+        - original_contract
+    aliases:
+      - new jobs
+      - jobs opened
+      - opened jobs
+    caveats:
+      - "The business meaning and possible values of bd_linked require confirmation."
+      - "Source currency is not explicitly confirmed."
+      - "The loaded rows cover only 2026-09-09 and 2026-09-10."
+    columns:
+      - name: job_id
+        physical_type: TEXT
+        nullable: false
+        semantic_role: identifier
+        description: "Source job identifier, stored as text to preserve identifier semantics."
+        aliases:
+          - job number
+      - name: job_label
+        physical_type: TEXT
+        nullable: false
+        semantic_role: dimension
+        description: "Source display label combining the job identifier and description."
+        aliases:
+          - job name
+      - name: customer_name
+        physical_type: TEXT
+        nullable: false
+        semantic_role: dimension
+        description: "Source customer name associated with the opened job."
+        aliases:
+          - customer
+          - client
+      - name: sales_id
+        physical_type: TEXT
+        nullable: false
+        semantic_role: dimension
+        description: "Source sales/account-manager code associated with the opened job."
+        aliases:
+          - account manager code
+          - salesperson code
+        caveat: "NONE is a literal category, not SQL NULL."
+      - name: original_contract
+        physical_type: REAL
+        nullable: false
+        semantic_role: measure
+        description: "Source-provided original contract amount for the opened job."
+        unit: "currency (source currency not explicitly confirmed)"
+        default_aggregation: sum
+        aliases:
+          - original contract value
+          - contract value
+      - name: city
+        physical_type: TEXT
+        nullable: false
+        semantic_role: dimension
+        description: "Source city associated with the opened job."
+      - name: state
+        physical_type: TEXT
+        nullable: false
+        semantic_role: dimension
+        description: "Source state code associated with the opened job."
+        format: "Source-provided state code"
+      - name: opened_date
+        physical_type: TEXT
+        nullable: false
+        semantic_role: time_dimension
+        description: "Date the job was opened and the preferred field for new-job period and trend queries."
+        format: "ISO 8601 date (YYYY-MM-DD)"
+        aliases:
+          - job opened date
+          - new job date
+      - name: bd_linked
+        physical_type: TEXT
+        nullable: false
+        semantic_role: dimension
+        description: "Source business-development linkage value; definition and codes require business confirmation."
+        caveat: "NONE is a literal category, not SQL NULL."
+
+relationships:
+  - name: new_jobs_to_account_manager
+    from: rpt_new_jobs_opened.sales_id
+    to: account_manager_summary.project_class_id
+    cardinality: many_to_one
+    status: candidate
+    enforced_in_sqlite: false
+    evidence: >-
+      Every current sales_id, including the literal NONE category, matches a
+      current project_class_id.
+    caveat: >-
+      This match is verified only for the supplied extracts and is not a
+      guaranteed enterprise master-data relationship.
+
+query_guidance:
+  table_selection:
+    - intent: "Account-manager sales, receivables, projections, or source-provided last-seven-days values"
+      table: account_manager_summary
+    - intent: "Change-order counts or income adjustments"
+      table: job_cost_change_orders
+    - intent: "Newly opened job counts, locations, customers, or original contract values"
+      table: rpt_new_jobs_opened
+  date_filters:
+    account_manager_summary: >-
+      report_period_start and report_period_end describe the source report
+      period. They do not define the exact sales_last_7_days window.
+    job_cost_change_orders: >-
+      Use co_date for business-period filtering. Use modified_on only when the
+      question explicitly asks when records changed.
+    rpt_new_jobs_opened: "Use opened_date for all new-job period and trend filters."
+  names_and_codes: >-
+    Match manager names with account_manager_summary.project_class_name and
+    manager codes with project_class_id. For new jobs, sales_id is a candidate
+    link to project_class_id.
+  case_handling: "Use COLLATE NOCASE or LOWER(...) for user-supplied names and locations."
+  money: >-
+    Round displayed amounts to two decimal places. Do not label the values USD
+    unless the source currency is separately confirmed.
+  coverage: >-
+    Always compare the requested date range with sources.observed_coverage and
+    disclose partial or unavailable coverage. Never present this local snapshot
+    as live, exhaustive, or current beyond its recorded dates.
+
+known_limitations:
+  - "The database contains static supplied extracts, not a live warehouse connection."
+  - "There is no snapshot key in the three business tables; do not append multiple snapshots to them."
+  - "The precise date boundary behind sales_last_7_days is unavailable."
+  - "The change-order filename range differs from the observed co_date range."
+  - "The new-jobs extract contains only two opened dates and cannot establish a full-month trend."
+  - "The source currency is not explicitly confirmed."
+  - "Status-code, bd_linked, fiscal-period, similar-sales-field, and variance-formula definitions require business confirmation."
+  - "The relationship between sales_id and project_class_id is candidate-only and is not enforced by SQLite."
+
+examples:
+  - name: account_manager_sales_last_7_days
+    question: "How much sale did a named account manager do in the last 7 days?"
+    table: account_manager_summary
+    parameters:
+      manager_name: "Account-manager name supplied by the user"
+    sql: |-
+      SELECT
+        project_class_id,
+        project_class_name,
+        sales_last_7_days,
+        report_period_start,
+        report_period_end
+      FROM account_manager_summary
+      WHERE project_class_name = :manager_name COLLATE NOCASE;
+    coverage_disclosure: >-
+      sales_last_7_days is source-pre-aggregated for the 2026-09-14 filename
+      snapshot. The exact seven-day boundary is not available in the source.
+
+  - name: change_order_amount_by_co_date
+    question: "What was the change-order amount for an explicit date range?"
+    table: job_cost_change_orders
+    parameters:
+      start_date: "Inclusive ISO date YYYY-MM-DD"
+      end_date: "Inclusive ISO date YYYY-MM-DD"
+    sql: |-
+      SELECT
+        COUNT(*) AS change_order_count,
+        ROUND(SUM(total_income_adj), 2) AS total_change_order_amount
+      FROM job_cost_change_orders
+      WHERE co_date BETWEEN :start_date AND :end_date;
+    coverage_disclosure: >-
+      The loaded co_date values span 2026-08-12 through 2026-09-09. The
+      filename's nominal week must not be treated as co_date coverage.
+
+  - name: new_job_trend_by_city
+    question: "What is the new-jobs count and contract-value trend for a city?"
+    table: rpt_new_jobs_opened
+    parameters:
+      city: "City supplied by the user"
+      start_date: "Inclusive ISO date YYYY-MM-DD"
+      end_date: "Inclusive ISO date YYYY-MM-DD"
+    sql: |-
+      SELECT
+        opened_date,
+        COUNT(*) AS new_job_count,
+        ROUND(SUM(original_contract), 2) AS total_original_contract
+      FROM rpt_new_jobs_opened
+      WHERE city = :city COLLATE NOCASE
+        AND opened_date BETWEEN :start_date AND :end_date
+      GROUP BY opened_date
+      ORDER BY opened_date;
+    coverage_disclosure: >-
+      The loaded opened_date values cover only 2026-09-09 through 2026-09-10;
+      results are partial for any wider requested range.

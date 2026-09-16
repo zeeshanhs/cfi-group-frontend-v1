@@ -44,6 +44,13 @@ Use npm unless the user explicitly requests another package manager. Do not repl
 4. Prefer the smallest coherent implementation that leaves the affected area complete, responsive, and accessible.
 5. Do not invent integrations, customer records, testimonials, project metrics, legal copy, or real operational behavior. Clearly label demo data and simulated submissions.
 
+## Local reporting data
+
+- The repository-local SQLite snapshot is `_PROJECT/data/reporting/cfi_reporting.sqlite`; start with `_PROJECT/data/reporting/README.md` for build, test, refresh, and query instructions.
+- Consult `_PROJECT/data/reporting/semantic_layer.yaml` before choosing tables, date fields, relationships, or measures for SQL and report tasks.
+- The loader is `_PROJECT/scripts/build_reporting_database.py`, its focused tests are in `_PROJECT/tests/test_reporting_database.py`, and the supplied source extracts are under `_PROJECT/tasks/BOOT-000/input/`.
+- This data is a limited static extract. Downstream reports must disclose applicable date coverage and semantic limitations rather than presenting it as live or exhaustive.
+
 ## Next.js and React conventions
 
 - Use the App Router under `app/`; do not add a Pages Router alongside it.
@@ -123,7 +130,7 @@ A change is complete when it satisfies the request, follows the relevant brand-k
 
 This repository represents one brand. `/brand-kit/` means the `brand-kit` directory at the repository root, not an operating-system path. It is the reusable source for brand intent, visual design, imagery, patterns, theme values and asset use. Do not substitute a chat export, another brand, a template library or remembered preferences for this kit.
 
-**Before any user-facing design, imagery, page/screen, frontend, visible-copy, styling, responsive, motion, accessibility or visual-review work:** read and apply `/.agent/skills/brand-experience/SKILL.md`. Do this even when the request does not mention the brand and even when implicit skill selection did not trigger. Resolve paths from the repository root, not the current subdirectory. For purely internal backend/tooling work with no effect on user-facing experience, skip this route.
+**Before any user-facing design, imagery, page/screen, frontend, visible-copy, styling, responsive, motion, accessibility or visual-review work:** read and apply `/.agents/skills/brand-experience/SKILL.md`. Do this even when the request does not mention the brand and even when implicit skill selection did not trigger. Resolve paths from the repository root, not the current subdirectory. For purely internal backend/tooling work with no effect on user-facing experience, skip this route.
 
 Use its shared contract and only the applicable profiles. Design/specification → `references/design.md`; photography/illustration/icons/image generation or editing → `references/imagery.md`; implementation or UI behavior changes → `references/web-development.md`; assessment → `references/review.md`. A task can use several profiles, sequentially in the same session. These are instructions, not additional agents.
 
@@ -133,6 +140,6 @@ Keep `/brand-kit/` unchanged unless the task explicitly requests a kit change. K
 
 Before claiming completion, identify the actual kit rules/references used, significant adaptations, and visual/functional checks performed or not performed in the existing task handoff. Do not invent tool access, generated images, browser checks or client approval. Code review of user-facing changes must check brand application as well as correctness.
 
-Canonical skill instructions live at `.agent/skills/brand-experience/`. `.agents/skills/brand-experience` is only the Codex discovery link or forwarding adapter; never maintain another copy of the skill body there. A discovered `$brand-experience` invocation follows the same contract.
+Canonical skill instructions live at `s/skills/brand-experience/`. `.agents/skills/brand-experience` is only the Codex discovery link or forwarding adapter; never maintain another copy of the skill body there. A discovered `$brand-experience` invocation follows the same contract.
 
 <!-- BRAND-KIT-INTEGRATION:END -->
