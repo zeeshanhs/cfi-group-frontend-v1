@@ -1,0 +1,126 @@
+{
+  "version": "1.0.0",
+  "purpose": "Package-owned file integrity; not a signature or semantic validator.",
+  "files": [
+    {
+      "path": ".agent/skills/brand-experience/SKILL.md",
+      "sha256": "cb9e1a15d49fec2278b38ac08c74bb09b2460eb7d7a9a407435bde988a043665",
+      "bytes": 5176
+    },
+    {
+      "path": ".agent/skills/brand-experience/agents/openai.yaml",
+      "sha256": "5629698fec3cd475fc0dad5f6749cec8ffb397d9ab2ea3e83b0b6522b21d4ee0",
+      "bytes": 329
+    },
+    {
+      "path": ".agent/skills/brand-experience/references/design.md",
+      "sha256": "c7659bf47e37b2207b4c72a63430bd8ecdf03df776b8632a0dba54c9ec3e5ee1",
+      "bytes": 3416
+    },
+    {
+      "path": ".agent/skills/brand-experience/references/imagery.md",
+      "sha256": "1030d472895592d256627a1d6ae2cf00c94123789252fceab245a7c245321099",
+      "bytes": 4153
+    },
+    {
+      "path": ".agent/skills/brand-experience/references/kit-lifecycle.md",
+      "sha256": "31d407753eb89184581993756dd00cfa7091387a9412a18b0dd564c84b09215a",
+      "bytes": 1989
+    },
+    {
+      "path": ".agent/skills/brand-experience/references/nextjs.md",
+      "sha256": "4a8bba727116e63df06c27b643b75d5f69b428e8817fdcff9aa66f6cf10e8e4e",
+      "bytes": 2037
+    },
+    {
+      "path": ".agent/skills/brand-experience/references/review.md",
+      "sha256": "02898128d84cf878f45c8c30f43819c32e6d302c5f6288bd34277faf3253136f",
+      "bytes": 2250
+    },
+    {
+      "path": ".agent/skills/brand-experience/references/shared-contract.md",
+      "sha256": "ad75b6d1b1e3014e76283482e1b51b515cbde290f808a19e858c40f0b63bea39",
+      "bytes": 8515
+    },
+    {
+      "path": ".agent/skills/brand-experience/references/web-development.md",
+      "sha256": "738ee8c4e4d2d7fb7a1c1c947533caaccfccaede8565f9a3c15f86cbc47006a5",
+      "bytes": 5703
+    },
+    {
+      "path": ".agent/skills/brand-experience/templates/brand-application.md",
+      "sha256": "a8f36600ab94e23d3688df09fe2c2b2b30a608cfa6d3fbe97bd8d9f15bf7ab1e",
+      "bytes": 825
+    },
+    {
+      "path": ".agent/skills/brand-experience/templates/imagery-brief.md",
+      "sha256": "db09c701a0196019dbd4a7efb95da0998f53cda87216bfa3102c4478ccc5ecd6",
+      "bytes": 1114
+    },
+    {
+      "path": ".agent/skills/brand-experience/templates/screen-specifications.md",
+      "sha256": "2608f6ea1106fda8e1e4a9c2f43e312936653961a1d03d08a13365ff570bbe44",
+      "bytes": 3122
+    },
+    {
+      "path": ".ai/brand-kit-integration/AGENTS.block.md",
+      "sha256": "7076625089111aa32302947b24e6235378753ad14f3a14245b8a4b69b5c58c20",
+      "bytes": 3067
+    },
+    {
+      "path": ".ai/brand-kit-integration/README.md",
+      "sha256": "f5e2240165c75f202e876b17da37420009e80b422515852449a5a61e9e97646c",
+      "bytes": 1425
+    },
+    {
+      "path": ".ai/brand-kit-integration/check.py",
+      "sha256": "db2d73e5e87068933d1abe49739a145600ac5168ecf76bb7e6ac5b1f1df684ff",
+      "bytes": 1247
+    },
+    {
+      "path": ".ai/brand-kit-integration/integration.py",
+      "sha256": "c294f942503049b1442ceada0c3e5c7addda1d6a4adee019dd40b85da38a000b",
+      "bytes": 18412
+    },
+    {
+      "path": ".ai/brand-kit-integration/tests/test_integration.py",
+      "sha256": "5a955ad3f610143f68937552506dbe336070a0b0adf0b25be4de5acc1f7bc3b1",
+      "bytes": 11308
+    },
+    {
+      "path": "docs/brand-kit-integration/ARCHITECTURE.md",
+      "sha256": "b259ccfe45d3b5d17310bbf08a0f3375d21fb37c3ad08830377f73342addc173",
+      "bytes": 4675
+    },
+    {
+      "path": "docs/brand-kit-integration/DECISIONS.md",
+      "sha256": "90c1a8c38c3628fe555e771e424163bd8907044406e12e2990a6b5e6bca051bd",
+      "bytes": 3117
+    },
+    {
+      "path": "docs/brand-kit-integration/RELEASE_REPORT.md",
+      "sha256": "d0e2ea07b5be7c93eb754c2b7deee6dfc8806fbfa934788850b701e99cd3fe20",
+      "bytes": 4027
+    },
+    {
+      "path": "docs/brand-kit-integration/SMOKE_TESTS.md",
+      "sha256": "718e48b8e48756cc1c6562c820bddc2972d1b31455b26ba2256b0648bdd12c83",
+      "bytes": 4682
+    },
+    {
+      "path": "docs/brand-kit-integration/SOURCES.md",
+      "sha256": "88ff718060490ff1599afc3988a79f916b9b170465ab4bddd8691e4df7876ab2",
+      "bytes": 2486
+    },
+    {
+      "path": "docs/brand-kit-integration/validation/artifact-checks.json",
+      "sha256": "173ce39110b8c5422e1f136f5a2d79e1f5a8e83c740b1a6de242ca9fe63ee9ce",
+      "bytes": 333
+    },
+    {
+      "path": "docs/brand-kit-integration/validation/unit-tests.txt",
+      "sha256": "fb7d1861354de2ab377b70240cd17689898b6d074d8c9e28745c817507e27c4c",
+      "bytes": 4294
+    }
+  ]
+}

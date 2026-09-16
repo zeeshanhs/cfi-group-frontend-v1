@@ -1,0 +1,95 @@
+/* CFI Group working prototype theme. No computed source CSS or original font was retrieved.
+   Values below are selected; comments distinguish screenshot samples from extensions.
+   Only a root theme is defined: dark marketing bands do not establish a complete dark mode. */
+:root {
+  /* Primary text. Selected; matches card-heading raster sample. */
+  --ce-color-text: #1D1D1D;
+  /* Secondary text. Selected; not source measured. */
+  --ce-color-muted: #555555;
+  /* Primary light surface. Selected; repeated screenshot pixel. */
+  --ce-color-surface: #FFFFFF;
+  /* Alternate light band / hover fill. Selected; repeated screenshot pixel. */
+  --ce-color-surface-alt: #F0F0F0;
+  /* Primary action / selected navigation. Selected normalization; full-page sample. Managed close-ups sample #D5111D. */
+  --ce-color-action: #D4111D;
+  /* Text on filled action. Selected; screenshot-backed relationship. */
+  --ce-color-on-action: #FFFFFF;
+  /* Control boundary. Selected for prototype visibility; not measured. */
+  --ce-color-border: #767676;
+  /* Quiet structural separator. Selected; not measured. */
+  --ce-color-divider: #D9D9D9;
+  /* Dark contact/evidence band. Selected; repeated screenshot pixel. */
+  --ce-color-surface-inverse: #1C1C1C;
+  /* Inset dark proof panel. Selected; repeated screenshot pixel. */
+  --ce-color-panel-inverse: #2F2F2F;
+  /* Optional marketing footer. Selected; repeated screenshot pixel. */
+  --ce-color-footer: #0C0C0C;
+  /* Text on dark surfaces. Selected; screenshot-backed relationship. */
+  --ce-color-on-inverse: #FFFFFF;
+  /* Plain dark fallback when imagery unavailable. Selected estimate; not a measured flat hero fill or official secondary color. */
+  --ce-color-hero-fallback: #163242;
+  /* Primary hover background. Selected alias to screenshot-derived role. */
+  --ce-color-action-hover-bg: var(--ce-color-surface-alt);
+  /* Primary hover label. Selected alias. */
+  --ce-color-action-hover-text: var(--ce-color-action);
+  /* Primary hover outline. Selected alias. */
+  --ce-color-action-hover-border: var(--ce-color-action);
+  /* Focus ring on light surfaces. Selected extension. */
+  --ce-color-focus: #1D1D1D;
+  /* Focus ring on dark surfaces. Selected extension. */
+  --ce-color-focus-inverse: #FFFFFF;
+  /* Offline-safe body stack. Deliberately selected fallback; real source font unknown. */
+  --ce-font-body: Arial, Helvetica, sans-serif;
+  /* Headings and short navigation. Selected alias; not a verified brand font. */
+  --ce-font-display: var(--ce-font-body);
+  /* Body weight. Selected. */
+  --ce-font-weight-body: 400;
+  /* Heading weight. Selected; rendering depends on local font availability. */
+  --ce-font-weight-heading: 600;
+  /* Action weight. Selected. */
+  --ce-font-weight-action: 700;
+  /* Body size. Selected CSS expression; not measured pixels. */
+  --ce-text-body: 1rem;
+  /* Primary marketing title. Selected responsive CSS expression. */
+  --ce-text-title: clamp(2rem, 3.5vw, 3.25rem);
+  /* Section heading. Selected responsive CSS expression. */
+  --ce-text-section: clamp(1.5rem, 2.2vw, 2rem);
+  /* Supporting metadata. Selected CSS expression. */
+  --ce-text-small: 0.875rem;
+  /* Body line height. Selected ratio. */
+  --ce-line-body: 1.5;
+  /* Heading line height. Selected ratio. */
+  --ce-line-heading: 1.12;
+  /* Control geometry. Selected square default from visual evidence; not measured CSS. */
+  --ce-radius-control: 0px;
+  /* Media-card geometry. Selected square default from visual evidence. */
+  --ce-radius-card: 0px;
+  /* Spacing base. Selected. */
+  --ce-space-unit: 4px;
+  /* Marketing band padding. Selected CSS expression; task layouts may use denser grouping. */
+  --ce-space-section: clamp(2.5rem, 6vw, 5rem);
+  /* Page side padding. Selected CSS expression. */
+  --ce-space-gutter: clamp(1.25rem, 4vw, 2.5rem);
+  /* Default centered content maximum. Selected; not inferred from raster width. */
+  --ce-content-max: 72rem;
+  /* Supporting copy maximum measure. Selected. */
+  --ce-measure-readable: 65ch;
+  /* Prototype target size. Selected extension, not source measured. */
+  --ce-control-min-height: 44px;
+  /* Standard outline. Selected. */
+  --ce-border-width: 1px;
+  /* Service-card hover shadow. Selected approximation of visible diffuse shadow. */
+  --ce-shadow-card-hover: 0 16px 40px rgba(0, 0, 0, 0.12);
+  /* Brief optional transition. Selected; no timing measured. */
+  --ce-duration-interaction: 160ms;
+  /* Transition easing. Selected; no easing measured. */
+  --ce-ease-standard: ease-out;
+  /* Focus outline. Selected extension. */
+  --ce-focus-width: 2px;
+  /* Focus separation. Selected extension. */
+  --ce-focus-offset: 3px;
+  /* Starting dark overlay for live text. Selected starting value; adjust for actual image legibility. */
+  --ce-hero-overlay: rgba(0, 0, 0, 0.55);
+  /* Optional environmental linework. Selected starting value; not measured. */
+  --ce-opacity-decor: 0.08;
+}

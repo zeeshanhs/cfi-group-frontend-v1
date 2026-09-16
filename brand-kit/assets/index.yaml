@@ -1,0 +1,234 @@
+schema_version: 1.0.0
+assets:
+- id: AS-001
+  name: CFI combined mark and wordmark, dark-background appearance
+  role: logo
+  status: reference-only
+  path: null
+  preview_path: null
+  sha256: null
+  origin: supplied
+  source: CFI_Group_home_page(1).png — header/footer
+  evidence:
+  - EV-001
+  - EV-003
+  scope: identity
+  authenticity: actual
+  usage: Observe the combined white lettering and orange-red ring mark on dark surfaces. Obtain an authorized original
+    for exact rendering; do not reconstruct.
+  restrictions:
+  - No original asset bytes are included.
+  - Do not crop an identity or photograph from a screenshot and label it an original.
+  - Screenshot sharing permission does not grant extraction, embedding or redistribution rights for the underlying
+    asset.
+  permissions:
+    demo_use: unknown
+    external_ai: unknown
+    basis: The underlying original was not supplied with reuse/sharing permission. The separately indexed screenshot
+      is permitted only as a reference for the requested same-brand chat continuation.
+- id: AS-002
+  name: Wordmark appearance within combined logo
+  role: wordmark
+  status: reference-only
+  path: null
+  preview_path: null
+  sha256: null
+  origin: supplied
+  source: CFI_Group_home_page(1).png — header/footer
+  evidence:
+  - EV-001
+  scope: identity
+  authenticity: actual
+  usage: No standalone wordmark file or light-background variant established. A plain text brand label is a disclosed
+    fallback, not this asset.
+  restrictions:
+  - No original asset bytes are included.
+  - Do not crop an identity or photograph from a screenshot and label it an original.
+  - Screenshot sharing permission does not grant extraction, embedding or redistribution rights for the underlying
+    asset.
+  permissions:
+    demo_use: unknown
+    external_ai: unknown
+    basis: The underlying original was not supplied with reuse/sharing permission. The separately indexed screenshot
+      is permitted only as a reference for the requested same-brand chat continuation.
+- id: AS-003
+  name: Ring mark appearance within combined logo
+  role: brand-mark
+  status: reference-only
+  path: null
+  preview_path: null
+  sha256: null
+  origin: supplied
+  source: CFI_Group_home_page(1).png — header/footer
+  evidence:
+  - EV-001
+  scope: identity
+  authenticity: actual
+  usage: Embedded orange-red ring-like symbol only; exact geometry, colors, clear space and standalone variants
+    unknown.
+  restrictions:
+  - No original asset bytes are included.
+  - Do not crop an identity or photograph from a screenshot and label it an original.
+  - Screenshot sharing permission does not grant extraction, embedding or redistribution rights for the underlying
+    asset.
+  permissions:
+    demo_use: unknown
+    external_ai: unknown
+    basis: The underlying original was not supplied with reuse/sharing permission. The separately indexed screenshot
+      is permitted only as a reference for the requested same-brand chat continuation.
+- id: AS-004
+  name: Favicon not inspected
+  role: favicon
+  status: missing
+  path: null
+  preview_path: null
+  sha256: null
+  origin: derived
+  source: https://www.cfigroup-us.com/
+  evidence:
+  - EV-012
+  scope: identity
+  authenticity: unknown
+  usage: Browser/source access failed; no favicon file, URL, variant or dimensions established.
+  restrictions:
+  - No original asset bytes are included.
+  - Do not crop an identity or photograph from a screenshot and label it an original.
+  - Screenshot sharing permission does not grant extraction, embedding or redistribution rights for the underlying
+    asset.
+  permissions:
+    demo_use: unknown
+    external_ai: unknown
+    basis: The underlying original was not supplied with reuse/sharing permission. The separately indexed screenshot
+      is permitted only as a reference for the requested same-brand chat continuation.
+- id: AS-005
+  name: Exterior hero photograph/composition reference
+  role: hero-image
+  status: reference-only
+  path: null
+  preview_path: null
+  sha256: null
+  origin: supplied
+  source: CFI_Group_home_page(1).png — opening hero
+  evidence:
+  - EV-001
+  scope: page-specific
+  authenticity: unknown
+  usage: Reference for architectural photography, dark treatment and left-aligned live copy. Underlying photograph
+    is not collected; the page screenshot is not a reusable hero source.
+  restrictions:
+  - No original asset bytes are included.
+  - Do not crop an identity or photograph from a screenshot and label it an original.
+  - Screenshot sharing permission does not grant extraction, embedding or redistribution rights for the underlying
+    asset.
+  permissions:
+    demo_use: unknown
+    external_ai: unknown
+    basis: The underlying original was not supplied with reuse/sharing permission. The separately indexed screenshot
+      is permitted only as a reference for the requested same-brand chat continuation.
+- id: AS-006
+  name: Service-title composition reference
+  role: title-image
+  status: reference-only
+  path: null
+  preview_path: null
+  sha256: null
+  origin: supplied
+  source: CFI_Group_service_1_page(1).png — title region
+  evidence:
+  - EV-002
+  scope: page-specific
+  authenticity: unknown
+  usage: Reference for centered live title over an interior photograph. No separate flattened original title image
+    is established.
+  restrictions:
+  - No original asset bytes are included.
+  - Do not crop an identity or photograph from a screenshot and label it an original.
+  - Screenshot sharing permission does not grant extraction, embedding or redistribution rights for the underlying
+    asset.
+  permissions:
+    demo_use: unknown
+    external_ai: unknown
+    basis: The underlying original was not supplied with reuse/sharing permission. The separately indexed screenshot
+      is permitted only as a reference for the requested same-brand chat continuation.
+- id: AS-007
+  name: Project exterior and renovated-interior photographs, reference set
+  role: photography
+  status: reference-only
+  path: null
+  preview_path: null
+  sha256: null
+  origin: supplied
+  source: CFI_Group_home_page(1).png; CFI_Group_service_1_page(1).png; CFI_Group_project_portfolio_page(1).png;
+    card_hover_effect_with_shadow(1).png
+  evidence:
+  - EV-001
+  - EV-002
+  - EV-003
+  - EV-006
+  scope: page-specific
+  authenticity: unknown
+  usage: Site-presented project imagery only. Use references for subject/framing; supply licensed originals for
+    publication or demo embedding. Project provenance not independently verified.
+  restrictions:
+  - No original asset bytes are included.
+  - Do not crop an identity or photograph from a screenshot and label it an original.
+  - Screenshot sharing permission does not grant extraction, embedding or redistribution rights for the underlying
+    asset.
+  permissions:
+    demo_use: unknown
+    external_ai: unknown
+    basis: The underlying original was not supplied with reuse/sharing permission. The separately indexed screenshot
+      is permitted only as a reference for the requested same-brand chat continuation.
+- id: AS-008
+  name: Faint map-like and looping linework treatments
+  role: graphic
+  status: reference-only
+  path: null
+  preview_path: null
+  sha256: null
+  origin: supplied
+  source: CFI_Group_home_page(1).png — hero/contact bands
+  evidence:
+  - EV-001
+  - EV-003
+  scope: brand-reusable
+  authenticity: unknown
+  usage: Composition reference for quiet linework on dark fields. No vector/source file collected; no exact map,
+    geographic scope or logo geometry may be inferred.
+  restrictions:
+  - No original asset bytes are included.
+  - Do not crop an identity or photograph from a screenshot and label it an original.
+  - Screenshot sharing permission does not grant extraction, embedding or redistribution rights for the underlying
+    asset.
+  permissions:
+    demo_use: unknown
+    external_ai: unknown
+    basis: The underlying original was not supplied with reuse/sharing permission. The separately indexed screenshot
+      is permitted only as a reference for the requested same-brand chat continuation.
+- id: AS-009
+  name: Red outline benefit icons and simple interface symbols
+  role: icon
+  status: reference-only
+  path: null
+  preview_path: null
+  sha256: null
+  origin: supplied
+  source: CFI_Group_home_page(1).png — benefits; nav_item_hover_effect(1).png — disclosure
+  evidence:
+  - EV-001
+  - EV-002
+  - EV-004
+  scope: brand-reusable
+  authenticity: unknown
+  usage: Outline-weight and color references only. No icon library, license or original glyph files identified.
+    Later demos may use newly authored generic symbols, labeled as adaptations.
+  restrictions:
+  - No original asset bytes are included.
+  - Do not crop an identity or photograph from a screenshot and label it an original.
+  - Screenshot sharing permission does not grant extraction, embedding or redistribution rights for the underlying
+    asset.
+  permissions:
+    demo_use: unknown
+    external_ai: unknown
+    basis: The underlying original was not supplied with reuse/sharing permission. The separately indexed screenshot
+      is permitted only as a reference for the requested same-brand chat continuation.

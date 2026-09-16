@@ -1,0 +1,656 @@
+{
+  "method": "File dimensions, SHA-256 and screenshot pixel counts; no CSS/viewport inference.",
+  "inspected_at": "2026-09-15T20:02:32+00:00",
+  "files": [
+    {
+      "evidence": "EV-001",
+      "source_id": "SRC-006",
+      "source_filename": "CFI_Group_home_page(1).png",
+      "filename": "CFI_REF_01_home.png",
+      "role": "Homepage rhythm",
+      "description": "Full homepage: dark architectural hero; white and pale-gray content bands; service and project imagery; charcoal proof/contact areas; black footer.",
+      "state": "Full-page screenshot; desktop-style composition, browser viewport unknown.",
+      "width": 489,
+      "height": 2048,
+      "source_sha256": "c78d394b64712aa60d59aaa866ca13efa45a5fd983773887de93f6e20f674f92",
+      "delivered_sha256": "941e7e9894b8edc1edbc79c4de66c0339b875a05b9b8af63fc83b2d8a0b09e2f",
+      "processing": "No embedded color profile. RGB values retained; no color-source certification implied.",
+      "pixel_only": true,
+      "resized": false,
+      "crop": null,
+      "viewport": null,
+      "original_capture_time": null,
+      "inspected_at": "2026-09-15T20:02:32+00:00",
+      "frequent_pixels": [
+        {
+          "rgb": [
+            240,
+            240,
+            240
+          ],
+          "hex": "#F0F0F0",
+          "count": 283634
+        },
+        {
+          "rgb": [
+            255,
+            255,
+            255
+          ],
+          "hex": "#FFFFFF",
+          "count": 162505
+        },
+        {
+          "rgb": [
+            28,
+            28,
+            28
+          ],
+          "hex": "#1C1C1C",
+          "count": 105832
+        },
+        {
+          "rgb": [
+            47,
+            47,
+            47
+          ],
+          "hex": "#2F2F2F",
+          "count": 55594
+        },
+        {
+          "rgb": [
+            12,
+            12,
+            12
+          ],
+          "hex": "#0C0C0C",
+          "count": 24718
+        },
+        {
+          "rgb": [
+            38,
+            41,
+            47
+          ],
+          "hex": "#26292F",
+          "count": 6584
+        },
+        {
+          "rgb": [
+            36,
+            39,
+            45
+          ],
+          "hex": "#24272D",
+          "count": 5704
+        },
+        {
+          "rgb": [
+            212,
+            17,
+            29
+          ],
+          "hex": "#D4111D",
+          "count": 4228
+        }
+      ]
+    },
+    {
+      "evidence": "EV-002",
+      "source_id": "SRC-007",
+      "source_filename": "CFI_Group_service_1_page(1).png",
+      "filename": "CFI_REF_02_service.png",
+      "role": "Service-page rhythm",
+      "description": "Renovations service page: centered interior-photo hero, image strip, icon-supported benefits, dark proof bands, project cards, contact area and FAQ.",
+      "state": "Full-page screenshot; desktop-style composition. Repeated content and a visible horizontal seam/cutoff are capture/source anomalies, not prescribed design.",
+      "width": 417,
+      "height": 2048,
+      "source_sha256": "1096d8f2b3afabe386dfb323854b74de7c2b810301cdb706c3bcafc9ea7b5904",
+      "delivered_sha256": "6cca0b66d4de468486e487ad0dfebc7307d0e0fdf1cb3ce77b27d309f9e599a0",
+      "processing": "No embedded color profile. RGB values retained; no color-source certification implied.",
+      "pixel_only": true,
+      "resized": false,
+      "crop": null,
+      "viewport": null,
+      "original_capture_time": null,
+      "inspected_at": "2026-09-15T20:02:32+00:00",
+      "frequent_pixels": [
+        {
+          "rgb": [
+            240,
+            240,
+            240
+          ],
+          "hex": "#F0F0F0",
+          "count": 332369
+        },
+        {
+          "rgb": [
+            255,
+            255,
+            255
+          ],
+          "hex": "#FFFFFF",
+          "count": 126790
+        },
+        {
+          "rgb": [
+            47,
+            47,
+            47
+          ],
+          "hex": "#2F2F2F",
+          "count": 56065
+        },
+        {
+          "rgb": [
+            28,
+            28,
+            28
+          ],
+          "hex": "#1C1C1C",
+          "count": 53227
+        },
+        {
+          "rgb": [
+            12,
+            12,
+            12
+          ],
+          "hex": "#0C0C0C",
+          "count": 18494
+        },
+        {
+          "rgb": [
+            38,
+            41,
+            47
+          ],
+          "hex": "#26292F",
+          "count": 3425
+        },
+        {
+          "rgb": [
+            36,
+            39,
+            45
+          ],
+          "hex": "#24272D",
+          "count": 3315
+        },
+        {
+          "rgb": [
+            212,
+            17,
+            29
+          ],
+          "hex": "#D4111D",
+          "count": 2188
+        }
+      ]
+    },
+    {
+      "evidence": "EV-003",
+      "source_id": "SRC-008",
+      "source_filename": "CFI_Group_project_portfolio_page(1).png",
+      "filename": "CFI_REF_03_portfolio.png",
+      "role": "Portfolio composition",
+      "description": "Portfolio page: centered photo hero, featured project cards, text scope filters, three-column photo grid, dark contact section.",
+      "state": "Full-page screenshot; desktop-style composition, browser viewport unknown; filter execution not observed.",
+      "width": 783,
+      "height": 2048,
+      "source_sha256": "6eb18d864a27916d30b6aa49a8f3d2eb24074cc789847d0a4c175a501e27532c",
+      "delivered_sha256": "e6cad0cc0e2374109be0a2009e57cfcf16f6b76c4c59b3548116d00ed4a4cc5a",
+      "processing": "No embedded color profile. RGB values retained; no color-source certification implied.",
+      "pixel_only": true,
+      "resized": false,
+      "crop": null,
+      "viewport": null,
+      "original_capture_time": null,
+      "inspected_at": "2026-09-15T20:02:32+00:00",
+      "frequent_pixels": [
+        {
+          "rgb": [
+            255,
+            255,
+            255
+          ],
+          "hex": "#FFFFFF",
+          "count": 490797
+        },
+        {
+          "rgb": [
+            28,
+            28,
+            28
+          ],
+          "hex": "#1C1C1C",
+          "count": 313561
+        },
+        {
+          "rgb": [
+            12,
+            12,
+            12
+          ],
+          "hex": "#0C0C0C",
+          "count": 61935
+        },
+        {
+          "rgb": [
+            212,
+            17,
+            29
+          ],
+          "hex": "#D4111D",
+          "count": 4240
+        },
+        {
+          "rgb": [
+            136,
+            173,
+            221
+          ],
+          "hex": "#88ADDD",
+          "count": 3659
+        },
+        {
+          "rgb": [
+            141,
+            178,
+            223
+          ],
+          "hex": "#8DB2DF",
+          "count": 2939
+        },
+        {
+          "rgb": [
+            29,
+            29,
+            29
+          ],
+          "hex": "#1D1D1D",
+          "count": 2413
+        },
+        {
+          "rgb": [
+            147,
+            181,
+            226
+          ],
+          "hex": "#93B5E2",
+          "count": 2251
+        }
+      ]
+    },
+    {
+      "evidence": "EV-004",
+      "source_id": "SRC-009",
+      "source_filename": "nav_item_hover_effect(1).png",
+      "filename": "CFI_REF_04_navigation_hover.png",
+      "role": "Navigation open-state detail",
+      "description": "Red Expertise tab above an opaque white dropdown; spacious uppercase gray service labels against the dark photo header.",
+      "state": "User identifies this as hover. The resulting open appearance is visible; trigger, timing, keyboard behavior and dismissal were not exercised.",
+      "width": 1382,
+      "height": 888,
+      "source_sha256": "09f8e26324c592020b2c212a913c127595ad4a63f6626191a5856912def32264",
+      "delivered_sha256": "a8e975cdc2a8856e6f2979aa249d0d36d7b55dea522bfd8784dc7ff588454c4b",
+      "processing": "Embedded Display ICC profile converted to sRGB with Pillow ImageCms before stripping metadata.",
+      "pixel_only": true,
+      "resized": false,
+      "crop": null,
+      "viewport": null,
+      "original_capture_time": null,
+      "inspected_at": "2026-09-15T20:02:32+00:00",
+      "frequent_pixels": [
+        {
+          "rgb": [
+            255,
+            255,
+            255
+          ],
+          "hex": "#FFFFFF",
+          "count": 427789
+        },
+        {
+          "rgb": [
+            21,
+            49,
+            65
+          ],
+          "hex": "#153141",
+          "count": 18905
+        },
+        {
+          "rgb": [
+            240,
+            240,
+            240
+          ],
+          "hex": "#F0F0F0",
+          "count": 17292
+        },
+        {
+          "rgb": [
+            18,
+            46,
+            63
+          ],
+          "hex": "#122E3F",
+          "count": 16794
+        },
+        {
+          "rgb": [
+            22,
+            50,
+            62
+          ],
+          "hex": "#16323E",
+          "count": 14551
+        },
+        {
+          "rgb": [
+            17,
+            45,
+            62
+          ],
+          "hex": "#112D3E",
+          "count": 13820
+        },
+        {
+          "rgb": [
+            213,
+            17,
+            29
+          ],
+          "hex": "#D5111D",
+          "count": 11753
+        },
+        {
+          "rgb": [
+            21,
+            49,
+            61
+          ],
+          "hex": "#15313D",
+          "count": 11737
+        }
+      ]
+    },
+    {
+      "evidence": "EV-005",
+      "source_id": "SRC-010",
+      "source_filename": "primary_button_hover_effect(1).png",
+      "filename": "CFI_REF_05_button_hover.png",
+      "role": "Primary-action hover detail",
+      "description": "Large pale-gray rectangular action with red outline and red uppercase text on a dark hero background.",
+      "state": "User identifies this as primary-button hover. Endpoint appearance only; no live transition, dimensions in CSS pixels, or focus state observed.",
+      "width": 938,
+      "height": 446,
+      "source_sha256": "c9a59d539d0ffff31bd5c18c89d75cd4ca8490a0024d69b39df743afb5dbdc66",
+      "delivered_sha256": "d4aab1b01a719d80176d2213077b493102bca2c4c75be6064d0d63e138ee42b3",
+      "processing": "Embedded Display ICC profile converted to sRGB with Pillow ImageCms before stripping metadata.",
+      "pixel_only": true,
+      "resized": false,
+      "crop": null,
+      "viewport": null,
+      "original_capture_time": null,
+      "inspected_at": "2026-09-15T20:02:32+00:00",
+      "frequent_pixels": [
+        {
+          "rgb": [
+            240,
+            240,
+            240
+          ],
+          "hex": "#F0F0F0",
+          "count": 61833
+        },
+        {
+          "rgb": [
+            43,
+            62,
+            73
+          ],
+          "hex": "#2B3E49",
+          "count": 21269
+        },
+        {
+          "rgb": [
+            42,
+            60,
+            72
+          ],
+          "hex": "#2A3C48",
+          "count": 15807
+        },
+        {
+          "rgb": [
+            41,
+            61,
+            72
+          ],
+          "hex": "#293D48",
+          "count": 5819
+        },
+        {
+          "rgb": [
+            213,
+            17,
+            29
+          ],
+          "hex": "#D5111D",
+          "count": 5758
+        },
+        {
+          "rgb": [
+            38,
+            58,
+            70
+          ],
+          "hex": "#263A46",
+          "count": 5535
+        },
+        {
+          "rgb": [
+            40,
+            59,
+            70
+          ],
+          "hex": "#283B46",
+          "count": 4732
+        },
+        {
+          "rgb": [
+            41,
+            60,
+            71
+          ],
+          "hex": "#293C47",
+          "count": 4657
+        }
+      ]
+    },
+    {
+      "evidence": "EV-006",
+      "source_id": "SRC-011",
+      "source_filename": "card_hover_effect_with_shadow(1).png",
+      "filename": "CFI_REF_06_card_hover.png",
+      "role": "Service-card hover detail",
+      "description": "White rectangular service card with dark heading, red underlined action and arrow, kitchen photograph, and soft diffuse outer shadow.",
+      "state": "User identifies this as card hover. Shadow appearance is visible; displacement, animation and clickable extent are not measured.",
+      "width": 1022,
+      "height": 820,
+      "source_sha256": "6e29a06a67e44d8523061a1889a35b019951abbe1b9fed86dd323b13f9e4c441",
+      "delivered_sha256": "71d642f6a9a218a6c10ca3ad6c4c11f6cbea354348578bd690eaa0842f7e4fbe",
+      "processing": "Embedded Display ICC profile converted to sRGB with Pillow ImageCms before stripping metadata.",
+      "pixel_only": true,
+      "resized": false,
+      "crop": null,
+      "viewport": null,
+      "original_capture_time": null,
+      "inspected_at": "2026-09-15T20:02:32+00:00",
+      "frequent_pixels": [
+        {
+          "rgb": [
+            255,
+            255,
+            255
+          ],
+          "hex": "#FFFFFF",
+          "count": 371923
+        },
+        {
+          "rgb": [
+            254,
+            254,
+            254
+          ],
+          "hex": "#FEFEFE",
+          "count": 31925
+        },
+        {
+          "rgb": [
+            253,
+            253,
+            253
+          ],
+          "hex": "#FDFDFD",
+          "count": 15342
+        },
+        {
+          "rgb": [
+            252,
+            252,
+            252
+          ],
+          "hex": "#FCFCFC",
+          "count": 10559
+        },
+        {
+          "rgb": [
+            29,
+            29,
+            29
+          ],
+          "hex": "#1D1D1D",
+          "count": 7870
+        },
+        {
+          "rgb": [
+            251,
+            251,
+            251
+          ],
+          "hex": "#FBFBFB",
+          "count": 7314
+        },
+        {
+          "rgb": [
+            250,
+            250,
+            250
+          ],
+          "hex": "#FAFAFA",
+          "count": 6065
+        },
+        {
+          "rgb": [
+            248,
+            248,
+            248
+          ],
+          "hex": "#F8F8F8",
+          "count": 5103
+        }
+      ]
+    }
+  ],
+  "regions": [
+    {
+      "file": "CFI_REF_04_navigation_hover.png",
+      "region_pixels": [
+        199,
+        51,
+        408,
+        115
+      ],
+      "label": "Open navigation tab",
+      "common_pixels": [
+        {
+          "hex": "#D5111D",
+          "count": 11753
+        },
+        {
+          "hex": "#FFFFFF",
+          "count": 839
+        },
+        {
+          "hex": "#F0F0F0",
+          "count": 70
+        },
+        {
+          "hex": "#FEF4F4",
+          "count": 58
+        }
+      ]
+    },
+    {
+      "file": "CFI_REF_05_button_hover.png",
+      "region_pixels": [
+        229,
+        146,
+        719,
+        280
+      ],
+      "label": "Hover action",
+      "common_pixels": [
+        {
+          "hex": "#F0F0F0",
+          "count": 58137
+        },
+        {
+          "hex": "#D5111D",
+          "count": 5758
+        },
+        {
+          "hex": "#E89C9B",
+          "count": 150
+        },
+        {
+          "hex": "#D93439",
+          "count": 138
+        }
+      ]
+    },
+    {
+      "file": "CFI_REF_06_card_hover.png",
+      "region_pixels": [
+        220,
+        125,
+        920,
+        245
+      ],
+      "label": "Card heading/action region",
+      "common_pixels": [
+        {
+          "hex": "#FFFFFF",
+          "count": 70258
+        },
+        {
+          "hex": "#1D1D1D",
+          "count": 7869
+        },
+        {
+          "hex": "#D5111D",
+          "count": 1184
+        },
+        {
+          "hex": "#292929",
+          "count": 214
+        }
+      ]
+    }
+  ]
+}

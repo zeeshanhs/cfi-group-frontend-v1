@@ -1,0 +1,258 @@
+schema_version: 1.0.0
+evidence:
+- id: EV-001
+  title: Homepage rhythm
+  source_id: SRC-006
+  kind: supplied-guidance
+  source_location: CFI_Group_home_page(1).png
+  captured_at: '2026-09-15T20:02:32+00:00'
+  method: user-supplied
+  viewport: null
+  state: Full-page screenshot; desktop-style composition, browser viewport unknown.
+  path: evidence/captures/CFI_REF_01_home.png
+  preview_path: null
+  observation: 'Full homepage: dark architectural hero; white and pale-gray content bands; service and project imagery;
+    charcoal proof/contact areas; black footer. Raster 489×2048 pixels; original browser viewport, device scale
+    and capture date unknown. No embedded color profile. RGB values retained; no color-source certification implied.
+    No crop, upscaling or reconstruction. Captured_at records this session''s intake/inspection, not original capture
+    time. Input SHA-256 c78d394b64712aa60d59aaa866ca13efa45a5fd983773887de93f6e20f674f92; delivered SHA-256 941e7e9894b8edc1edbc79c4de66c0339b875a05b9b8af63fc83b2d8a0b09e2f.
+    Full-page sources establish rhythm, not legibility of every label or exact CSS metrics.'
+  external_ai: permitted
+  permission_basis: User supplied these screenshots and explicitly requested actual visual references for the next
+    ChatGPT conversation for CFI Group. Permission is recorded narrowly for handling and reattaching these supplied
+    reference images in that same-brand workflow; it is not evidence of copyright ownership, asset extraction rights,
+    public redistribution, or permission to embed the underlying photographs or identity in a deliverable UI.
+- id: EV-002
+  title: Service-page rhythm
+  source_id: SRC-007
+  kind: supplied-guidance
+  source_location: CFI_Group_service_1_page(1).png
+  captured_at: '2026-09-15T20:02:32+00:00'
+  method: user-supplied
+  viewport: null
+  state: Full-page screenshot; desktop-style composition. Repeated content and a visible horizontal seam/cutoff
+    are capture/source anomalies, not prescribed design.
+  path: evidence/captures/CFI_REF_02_service.png
+  preview_path: null
+  observation: 'Renovations service page: centered interior-photo hero, image strip, icon-supported benefits, dark
+    proof bands, project cards, contact area and FAQ. Raster 417×2048 pixels; original browser viewport, device
+    scale and capture date unknown. No embedded color profile. RGB values retained; no color-source certification
+    implied. No crop, upscaling or reconstruction. Captured_at records this session''s intake/inspection, not original
+    capture time. Input SHA-256 1096d8f2b3afabe386dfb323854b74de7c2b810301cdb706c3bcafc9ea7b5904; delivered SHA-256
+    6cca0b66d4de468486e487ad0dfebc7307d0e0fdf1cb3ce77b27d309f9e599a0. Full-page sources establish rhythm, not legibility
+    of every label or exact CSS metrics.'
+  external_ai: permitted
+  permission_basis: User supplied these screenshots and explicitly requested actual visual references for the next
+    ChatGPT conversation for CFI Group. Permission is recorded narrowly for handling and reattaching these supplied
+    reference images in that same-brand workflow; it is not evidence of copyright ownership, asset extraction rights,
+    public redistribution, or permission to embed the underlying photographs or identity in a deliverable UI.
+- id: EV-003
+  title: Portfolio composition
+  source_id: SRC-008
+  kind: supplied-guidance
+  source_location: CFI_Group_project_portfolio_page(1).png
+  captured_at: '2026-09-15T20:02:32+00:00'
+  method: user-supplied
+  viewport: null
+  state: Full-page screenshot; desktop-style composition, browser viewport unknown; filter execution not observed.
+  path: evidence/captures/CFI_REF_03_portfolio.png
+  preview_path: null
+  observation: 'Portfolio page: centered photo hero, featured project cards, text scope filters, three-column photo
+    grid, dark contact section. Raster 783×2048 pixels; original browser viewport, device scale and capture date
+    unknown. No embedded color profile. RGB values retained; no color-source certification implied. No crop, upscaling
+    or reconstruction. Captured_at records this session''s intake/inspection, not original capture time. Input SHA-256
+    6eb18d864a27916d30b6aa49a8f3d2eb24074cc789847d0a4c175a501e27532c; delivered SHA-256 e6cad0cc0e2374109be0a2009e57cfcf16f6b76c4c59b3548116d00ed4a4cc5a.
+    Full-page sources establish rhythm, not legibility of every label or exact CSS metrics.'
+  external_ai: permitted
+  permission_basis: User supplied these screenshots and explicitly requested actual visual references for the next
+    ChatGPT conversation for CFI Group. Permission is recorded narrowly for handling and reattaching these supplied
+    reference images in that same-brand workflow; it is not evidence of copyright ownership, asset extraction rights,
+    public redistribution, or permission to embed the underlying photographs or identity in a deliverable UI.
+- id: EV-004
+  title: Navigation open-state detail
+  source_id: SRC-009
+  kind: supplied-guidance
+  source_location: nav_item_hover_effect(1).png
+  captured_at: '2026-09-15T20:02:32+00:00'
+  method: user-supplied
+  viewport: null
+  state: User identifies this as hover. The resulting open appearance is visible; trigger, timing, keyboard behavior
+    and dismissal were not exercised.
+  path: evidence/captures/CFI_REF_04_navigation_hover.png
+  preview_path: null
+  observation: Red Expertise tab above an opaque white dropdown; spacious uppercase gray service labels against
+    the dark photo header. Raster 1382×888 pixels; original browser viewport, device scale and capture date unknown.
+    Embedded Display ICC profile converted to sRGB with Pillow ImageCms before stripping metadata. No crop, upscaling
+    or reconstruction. Captured_at is session inspection time. Input SHA-256 09f8e26324c592020b2c212a913c127595ad4a63f6626191a5856912def32264;
+    delivered SHA-256 a8e975cdc2a8856e6f2979aa249d0d36d7b55dea522bfd8784dc7ff588454c4b.
+  external_ai: permitted
+  permission_basis: User supplied these screenshots and explicitly requested actual visual references for the next
+    ChatGPT conversation for CFI Group. Permission is recorded narrowly for handling and reattaching these supplied
+    reference images in that same-brand workflow; it is not evidence of copyright ownership, asset extraction rights,
+    public redistribution, or permission to embed the underlying photographs or identity in a deliverable UI.
+- id: EV-005
+  title: Primary-action hover detail
+  source_id: SRC-010
+  kind: supplied-guidance
+  source_location: primary_button_hover_effect(1).png
+  captured_at: '2026-09-15T20:02:32+00:00'
+  method: user-supplied
+  viewport: null
+  state: User identifies this as primary-button hover. Endpoint appearance only; no live transition, dimensions
+    in CSS pixels, or focus state observed.
+  path: evidence/captures/CFI_REF_05_button_hover.png
+  preview_path: null
+  observation: Large pale-gray rectangular action with red outline and red uppercase text on a dark hero background.
+    Raster 938×446 pixels; original browser viewport, device scale and capture date unknown. Embedded Display ICC
+    profile converted to sRGB with Pillow ImageCms before stripping metadata. No crop, upscaling or reconstruction.
+    Captured_at is session inspection time. Input SHA-256 c9a59d539d0ffff31bd5c18c89d75cd4ca8490a0024d69b39df743afb5dbdc66;
+    delivered SHA-256 d4aab1b01a719d80176d2213077b493102bca2c4c75be6064d0d63e138ee42b3.
+  external_ai: permitted
+  permission_basis: User supplied these screenshots and explicitly requested actual visual references for the next
+    ChatGPT conversation for CFI Group. Permission is recorded narrowly for handling and reattaching these supplied
+    reference images in that same-brand workflow; it is not evidence of copyright ownership, asset extraction rights,
+    public redistribution, or permission to embed the underlying photographs or identity in a deliverable UI.
+- id: EV-006
+  title: Service-card hover detail
+  source_id: SRC-011
+  kind: supplied-guidance
+  source_location: card_hover_effect_with_shadow(1).png
+  captured_at: '2026-09-15T20:02:32+00:00'
+  method: user-supplied
+  viewport: null
+  state: User identifies this as card hover. Shadow appearance is visible; displacement, animation and clickable
+    extent are not measured.
+  path: evidence/captures/CFI_REF_06_card_hover.png
+  preview_path: null
+  observation: White rectangular service card with dark heading, red underlined action and arrow, kitchen photograph,
+    and soft diffuse outer shadow. Raster 1022×820 pixels; original browser viewport, device scale and capture date
+    unknown. Embedded Display ICC profile converted to sRGB with Pillow ImageCms before stripping metadata. No crop,
+    upscaling or reconstruction. Captured_at is session inspection time. Input SHA-256 6e29a06a67e44d8523061a1889a35b019951abbe1b9fed86dd323b13f9e4c441;
+    delivered SHA-256 71d642f6a9a218a6c10ca3ad6c4c11f6cbea354348578bd690eaa0842f7e4fbe.
+  external_ai: permitted
+  permission_basis: User supplied these screenshots and explicitly requested actual visual references for the next
+    ChatGPT conversation for CFI Group. Permission is recorded narrowly for handling and reattaching these supplied
+    reference images in that same-brand workflow; it is not evidence of copyright ownership, asset extraction rights,
+    public redistribution, or permission to embed the underlying photographs or identity in a deliverable UI.
+- id: EV-007
+  title: Indexed homepage positioning
+  source_id: SRC-002
+  kind: website
+  source_location: https://www.cfigroup-us.com/
+  captured_at: '2026-09-15T20:02:32+00:00'
+  method: text-inspection
+  viewport: null
+  state: Indexed search text; direct live-page access not established.
+  path: evidence/captures/web_observations.md
+  preview_path: null
+  observation: Indexed homepage excerpt corroborates multi-family and commercial renovation positioning. Not a live
+    rendered inspection; company claims remain source claims.
+  external_ai: permitted
+  permission_basis: 'Current user request: build a reusable CFI Group Client Experience Kit and a chat packet for
+    using the derived guidance in another ChatGPT conversation for this brand. Applies to agent-authored guidance
+    and factual inspection notes, not a blanket license for third-party originals.'
+- id: EV-008
+  title: Indexed service positioning
+  source_id: SRC-003
+  kind: website
+  source_location: https://www.cfigroup-us.com/renovations-and-remodeling/
+  captured_at: '2026-09-15T20:02:32+00:00'
+  method: text-inspection
+  viewport: null
+  state: Indexed search text; direct live-page access not established.
+  path: evidence/captures/web_observations.md
+  preview_path: null
+  observation: Indexed renovation-service excerpts corroborate the service category, professional-delivery language
+    and property context; no full current service-page text or live layout verified.
+  external_ai: permitted
+  permission_basis: 'Current user request: build a reusable CFI Group Client Experience Kit and a chat packet for
+    using the derived guidance in another ChatGPT conversation for this brand. Applies to agent-authored guidance
+    and factual inspection notes, not a blanket license for third-party originals.'
+- id: EV-009
+  title: Indexed portfolio scope
+  source_id: SRC-004
+  kind: website
+  source_location: https://www.cfigroup-us.com/portfolio/
+  captured_at: '2026-09-15T20:02:32+00:00'
+  method: text-inspection
+  viewport: null
+  state: Indexed search text; direct live-page access not established.
+  path: evidence/captures/web_observations.md
+  preview_path: null
+  observation: Indexed portfolio excerpt corroborates work-scope navigation. Active filtering, totals, transitions
+    and data were not exercised.
+  external_ai: permitted
+  permission_basis: 'Current user request: build a reusable CFI Group Client Experience Kit and a chat packet for
+    using the derived guidance in another ChatGPT conversation for this brand. Applies to agent-authored guidance
+    and factual inspection notes, not a blanket license for third-party originals.'
+- id: EV-010
+  title: Indexed company description
+  source_id: SRC-005
+  kind: website
+  source_location: https://www.cfigroup-us.com/home/about/
+  captured_at: '2026-09-15T20:02:32+00:00'
+  method: text-inspection
+  viewport: null
+  state: Indexed search text; direct live-page access not established.
+  path: evidence/captures/web_observations.md
+  preview_path: null
+  observation: Indexed About text describes renovation contracting and communication across management, vendors
+    and tenants. It is not an independent audit of experience, performance or client relationships.
+  external_ai: permitted
+  permission_basis: 'Current user request: build a reusable CFI Group Client Experience Kit and a chat packet for
+    using the derived guidance in another ChatGPT conversation for this brand. Applies to agent-authored guidance
+    and factual inspection notes, not a blanket license for third-party originals.'
+- id: EV-011
+  title: Raster measurements and color-profile normalization
+  source_id: SRC-006
+  kind: supplied-guidance
+  source_location: The six supplied screenshot filenames listed in raster_measurements.json
+  captured_at: '2026-09-15T20:02:32+00:00'
+  method: source-file
+  viewport: null
+  state: Stored raster files; not rendered DOM.
+  path: evidence/captures/raster_measurements.json
+  preview_path: null
+  observation: 'Dimensions and SHA-256 computed from actual files. Full-page dominant action red is #D4111D; color-managed
+    hover close-ups contain #D5111D. The one-channel difference is not evidence of a separate brand state. White
+    #FFFFFF, pale gray #F0F0F0 and dark band colors are repeated stored pixels. All CSS metrics and normalized theme
+    roles are selected, not measured from the DOM.'
+  external_ai: permitted
+  permission_basis: 'Current user request: build a reusable CFI Group Client Experience Kit and a chat packet for
+    using the derived guidance in another ChatGPT conversation for this brand. Applies to agent-authored guidance
+    and factual inspection notes, not a blanket license for third-party originals.'
+- id: EV-012
+  title: Capability and inspection boundaries
+  source_id: SRC-002
+  kind: website
+  source_location: https://www.cfigroup-us.com/
+  captured_at: '2026-09-15T20:02:32+00:00'
+  method: text-inspection
+  viewport: null
+  state: Fetch timeout, browser administrator block and direct-request DNS failure.
+  path: evidence/captures/inspection_limits.md
+  preview_path: null
+  observation: No live or mobile browser capture succeeded. No computed CSS, asset originals, loaded font, live
+    interaction or accessibility test was obtained. Source screenshots plus indexed public text support a partial
+    kit.
+  external_ai: permitted
+  permission_basis: 'Current user request: build a reusable CFI Group Client Experience Kit and a chat packet for
+    using the derived guidance in another ChatGPT conversation for this brand. Applies to agent-authored guidance
+    and factual inspection notes, not a blanket license for third-party originals.'
+- id: EV-013
+  title: Trade-partner meaning of Work With Us
+  source_id: SRC-013
+  kind: website
+  source_location: https://www.cfigroup-us.com/work-with-us/
+  captured_at: '2026-09-15T20:02:32+00:00'
+  method: text-inspection
+  viewport: null
+  state: Indexed search text; direct live-page access not established.
+  path: evidence/captures/web_observations.md
+  preview_path: null
+  observation: Indexed page text addresses suppliers, subcontractors and service providers. This resolves the navigation
+    label without inventing employment or application workflows.
+  external_ai: permitted
+  permission_basis: 'Current user request: build a reusable CFI Group Client Experience Kit and a chat packet for
+    using the derived guidance in another ChatGPT conversation for this brand. Applies to agent-authored guidance
+    and factual inspection notes, not a blanket license for third-party originals.'

@@ -1,0 +1,6 @@
+interface:
+  display_name: "Brand Experience"
+  short_description: "Apply the canonical brand kit to design and web tasks"
+  default_prompt: "Use $brand-experience to apply this repository's /brand-kit/ to the requested task, select the relevant profiles, and verify the actual output."
+policy:
+  allow_implicit_invocation: true

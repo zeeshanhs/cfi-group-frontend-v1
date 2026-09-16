@@ -1,0 +1,238 @@
+schema_version: 1.0.0
+framework_version: cek-chat-1.0.0
+brand:
+  id: cfi-group
+  name: CFI Group
+population: partial
+purpose: brand
+paths:
+  experience: experience.md
+  design: design.md
+  patterns: patterns.md
+  theme: theme.css
+  assets: assets/index.yaml
+  evidence: evidence/index.yaml
+sources:
+- id: SRC-001
+  kind: task-input
+  location: 'Current conversation: user request to build the CFI Group reusable kit, 2026-09-15'
+  authority: reference
+  scope: Brand identity and task scope; scoped handling of supplied references and export of derived guidance. No
+    additional brand guidelines or blanket asset rights supplied.
+- id: SRC-002
+  kind: website
+  location: https://www.cfigroup-us.com/
+  authority: reference
+  scope: Homepage identity and service positioning, available through indexed search text; direct fetch failed.
+- id: SRC-003
+  kind: website
+  location: https://www.cfigroup-us.com/renovations-and-remodeling/
+  authority: reference
+  scope: Representative service page, indexed search excerpt only; supplied screenshot provides visuals.
+- id: SRC-004
+  kind: website
+  location: https://www.cfigroup-us.com/portfolio/
+  authority: reference
+  scope: Portfolio heading and scope categories from indexed text; supplied screenshot provides visuals.
+- id: SRC-005
+  kind: website
+  location: https://www.cfigroup-us.com/home/about/
+  authority: reference
+  scope: Indexed page text describes renovation contracting, property audiences and communication across management,
+    vendors and tenants. Company claims are not independently verified.
+- id: SRC-006
+  kind: supplied-guidance
+  location: CFI_Group_home_page(1).png
+  authority: reference
+  scope: Homepage rhythm; screenshot evidence only, not confirmed brand policy or original reusable assets.
+- id: SRC-007
+  kind: supplied-guidance
+  location: CFI_Group_service_1_page(1).png
+  authority: reference
+  scope: Service-page rhythm; screenshot evidence only, not confirmed brand policy or original reusable assets.
+- id: SRC-008
+  kind: supplied-guidance
+  location: CFI_Group_project_portfolio_page(1).png
+  authority: reference
+  scope: Portfolio composition; screenshot evidence only, not confirmed brand policy or original reusable assets.
+- id: SRC-009
+  kind: supplied-guidance
+  location: nav_item_hover_effect(1).png
+  authority: reference
+  scope: Navigation open-state detail; screenshot evidence only, not confirmed brand policy or original reusable
+    assets.
+- id: SRC-010
+  kind: supplied-guidance
+  location: primary_button_hover_effect(1).png
+  authority: reference
+  scope: Primary-action hover detail; screenshot evidence only, not confirmed brand policy or original reusable
+    assets.
+- id: SRC-011
+  kind: supplied-guidance
+  location: card_hover_effect_with_shadow(1).png
+  authority: reference
+  scope: Service-card hover detail; screenshot evidence only, not confirmed brand policy or original reusable assets.
+- id: SRC-012
+  kind: supplied-guidance
+  location: CLIENT_EXPERIENCE_CHAT(1).md
+  authority: reference
+  scope: Operating playbook and CEK 1.0.0 schemas. Governs authoring workflow, not CFI brand approval.
+- id: SRC-013
+  kind: website
+  location: https://www.cfigroup-us.com/work-with-us/
+  authority: reference
+  scope: Indexed text establishes trade-partner inquiry context; does not establish an employee recruiting workflow.
+coverage:
+- context: web-marketing
+  status: observed
+  evidence:
+  - EV-001
+  - EV-002
+  - EV-003
+  - EV-004
+  - EV-005
+  - EV-006
+  - EV-007
+  - EV-008
+  - EV-009
+  note: Observed supplied desktop-style screenshots and indexed text. Sufficient for a working visual reference
+    kit, not live-site or brand-policy validation.
+- context: web-app
+  status: extended
+  evidence:
+  - EV-001
+  - EV-004
+  - EV-005
+  - EV-006
+  - EV-012
+  note: Transfers identity relationships, controls and voice only; app navigation, domain model and functionality
+    are left to the system specification. No application designed here.
+- context: web-editorial
+  status: not-inspected
+  evidence: []
+  note: No article/newsletter/editorial surface inspected; do not claim a resolved editorial template.
+- context: image-only
+  status: extended
+  evidence:
+  - EV-001
+  - EV-002
+  - EV-003
+  - EV-006
+  note: Art direction and future screen-image expression are derived; no generated images, exact-identity outputs
+    or completed application screens are included.
+recognition_rule_ids:
+- EXP-001
+- EXP-003
+- DES-001
+- DES-003
+- DES-008
+imagery_policy: image-families
+asset_inventory:
+- category: logo
+  status: found
+  asset_ids:
+  - AS-001
+  evidence:
+  - EV-001
+  - EV-003
+  note: Found embedded in screenshots, not as a reusable original. No authorized original delivered.
+- category: wordmark
+  status: found
+  asset_ids:
+  - AS-002
+  evidence:
+  - EV-001
+  note: Found only within the combined logo; standalone original and variants not established.
+- category: brand-mark
+  status: found
+  asset_ids:
+  - AS-003
+  evidence:
+  - EV-001
+  note: Found only within the combined logo; exact geometry/clear-space data unavailable.
+- category: favicon
+  status: not-inspected
+  asset_ids:
+  - AS-004
+  evidence:
+  - EV-012
+  note: Not inspected because browser/source access failed; no favicon bytes.
+- category: hero-image
+  status: found
+  asset_ids:
+  - AS-005
+  evidence:
+  - EV-001
+  note: Found as screenshot composition only. Photo, live text and overlay must remain separate concepts.
+- category: title-image
+  status: found
+  asset_ids:
+  - AS-006
+  evidence:
+  - EV-002
+  note: Found as live title over photograph in screenshot. No standalone flattened title original established.
+- category: photography
+  status: found
+  asset_ids:
+  - AS-007
+  evidence:
+  - EV-001
+  - EV-002
+  - EV-003
+  - EV-006
+  note: Found in supplied page references; source originals, project provenance and reusable rights not established.
+- category: illustration
+  status: found
+  asset_ids:
+  - AS-008
+  evidence:
+  - EV-001
+  - EV-003
+  note: Decorative map-like/looping linework observed; classified as graphic in the asset index. No original vector
+    file.
+- category: icons
+  status: found
+  asset_ids:
+  - AS-009
+  evidence:
+  - EV-001
+  - EV-002
+  - EV-004
+  note: Outline icons observed; original library/glyphs and rights not established.
+sharing:
+  guidance_external_ai: permitted
+  basis: 'Current user request: build a reusable CFI Group Client Experience Kit and a chat packet for using the
+    derived guidance in another ChatGPT conversation for this brand. Applies to agent-authored guidance and factual
+    inspection notes, not a blanket license for third-party originals.'
+export_defaults:
+  rule_ids: []
+  asset_ids: []
+  evidence_ids:
+  - EV-001
+  - EV-002
+  - EV-003
+  - EV-004
+  - EV-005
+  - EV-006
+  max_words: 9000
+  max_images: 6
+known_gaps:
+- No live-site browser rendering or computed CSS succeeded; indexed web text is not a freshness guarantee.
+- All six provided screenshot layouts are desktop-style; browser viewport, scale factor and original capture time
+  are unknown. No mobile source inspected.
+- The service screenshot is low-resolution and contains repeated/seamed regions. It supports overall rhythm, not
+  deliberate repetition or readable verification of every sentence.
+- No confirmed brand manual, original logo/wordmark/mark variants, favicon, exact typography, official color tokens,
+  clear-space rules or motion timings supplied.
+- Underlying photographs, identity files, background graphics and icons are reference-only/missing with unknown
+  demo and external-AI permissions. Supplied screenshots have narrower reference-sharing scope.
+- No live navigation, filter, carousel, form, keyboard/focus or loading/error behavior tested. Their nonvisual behaviors
+  are selected extensions.
+- Marketing source contains a blue form action unlike the red main action system; new prototypes normalize to red
+  as a reversible working choice.
+- No application or editorial interface observed. Web-app and image-only contexts are explicitly extended; editorial
+  remains not-inspected.
+- System specification, prototype users/workflows and project-specific demonstration data must be supplied in the
+  next chat. No application has been designed.
+- No full dark theme or light-background identity variant is established. The root theme includes local inverse
+  surfaces only.

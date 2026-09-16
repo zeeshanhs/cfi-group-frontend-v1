@@ -1,0 +1,10 @@
+# Next.js adapter — conditional, not a framework mandate
+
+Read only when the repository actually uses Next.js. The package does not pin a Next.js, React, Tailwind or component-library version. Inspect installed versions, route architecture, conventions and current official documentation when a version-specific decision is uncertain.
+
+- Follow the existing App Router or Pages Router structure; do not migrate routers for a brand change. Keep server/client boundaries intentional. Add client execution only for genuine interactions and avoid unnecessary hydration for static content.
+- Import the canonical theme through the existing global CSS entry point and supported build path. Keep Tailwind/Shadcn/Radix mappings in a thin app adapter. Read installed Tailwind version and configuration; do not paste version-incompatible configuration. Preserve actual color representations and contrast pairings.
+- Reuse approved application components and current font-loading conventions. Verify which face/weight loads; declared font-family and mocked screenshots are not evidence of rendered fonts. Retain a disclosed fallback without packaging font binaries.
+- Handle identity/images using the actual asset files and the project's supported static-image mechanism. Preserve aspect ratios, useful intrinsic dimensions, responsive sizing and appropriate image loading. Do not rely on temporary external image URLs or broaden remote-image permissions unnecessarily.
+- Keep reusable brand data in the kit; screen layout and interactive state belong to the application. Metadata, visible headings and conversion actions should reflect the actual task purpose and truthful content, not a generic template. Follow separate editorial/research instructions for substantive article claims.
+- Run the existing project's relevant checks. Verify server rendering/hydration, interactions, image/font loading and relevant viewport layouts with the available environment. Mention unperformed checks specifically. Do not invent a passing deployed preview.
