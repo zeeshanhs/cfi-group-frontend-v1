@@ -9,9 +9,8 @@ import {
   ReportingDatabaseError,
   withReadOnlyDatabase,
 } from "@/lib/reporting/database";
+import type { DateRange } from "@/lib/reporting/date-range";
 
-export const WEEKLY_EXTRACT_START = "2026-09-07";
-export const WEEKLY_EXTRACT_END = "2026-09-13";
 export const ACCOUNT_SNAPSHOT_DATE = "2026-09-14";
 
 export interface AccountManagerRow {
@@ -63,12 +62,21 @@ export interface DateCoverage {
   end: string;
 }
 
+export interface WeeklySalesSourceData extends WeeklySalesSourceRows {
+  selectedRange: DateRange;
+  sourceCoverage: {
+    newJobs: DateCoverage | null;
+    changeOrders: DateCoverage | null;
+  };
+}
+
 export type AccountManagerReportRow = AccountManagerRow;
 
 export interface WeeklySalesReportModel {
   metadata: {
-    weeklyExtractStart: string;
-    weeklyExtractEnd: string;
+    selectedRange: DateRange;
+    newJobSourceCoverage: DateCoverage | null;
+    changeOrderSourceCoverage: DateCoverage | null;
     accountSnapshotDate: string;
   };
   kpis: {
@@ -96,14 +104,12 @@ export interface WeeklySalesReportModel {
     >;
     count: number;
     contractTotal: number;
-    coverage: DateCoverage | null;
   };
   changeOrders: {
     rows: ChangeOrderRow[];
     count: number;
     netAdjustment: number;
     negativeAdjustmentCount: number;
-    coverage: DateCoverage | null;
   };
   accountManagers: {
     rows: AccountManagerReportRow[];
@@ -153,6 +159,14 @@ function readNullableNumber(row: UnknownRecord, key: string, table: string) {
     return null;
   }
   return readNumber(row, key, table);
+}
+
+function readNullableString(row: UnknownRecord, key: string, table: string) {
+  const value = row[key];
+  if (value === null) {
+    return null;
+  }
+  return readString(row, key, table);
 }
 
 function assertRecord(row: unknown, table: string): UnknownRecord {
@@ -224,25 +238,63 @@ function parseNewJobRow(row: unknown): NewJobRow {
   };
 }
 
+function parseCoverage(row: unknown, table: string): DateCoverage | null {
+  const record = assertRecord(row, table);
+  const start = readNullableString(record, "start", table);
+  const end = readNullableString(record, "end", table);
+
+  if (start === null && end === null) {
+    return null;
+  }
+
+  if (start === null || end === null) {
+    throw new ReportingQueryError(table);
+  }
+
+  return { start, end };
+}
+
+type ReportingDatabase = Parameters<typeof withReadOnlyDatabase>[0] extends (
+  database: infer T,
+) => unknown
+  ? T
+  : never;
+
+type QueryParameters = Record<string, string | number>;
+
 function queryRows(
-  database: Parameters<typeof withReadOnlyDatabase>[0] extends (
-    database: infer T,
-  ) => unknown
-    ? T
-    : never,
+  database: ReportingDatabase,
   table: string,
   sql: string,
+  parameters?: QueryParameters,
 ) {
   try {
-    return database.prepare(sql).all();
+    const statement = database.prepare(sql);
+    return parameters ? statement.all(parameters) : statement.all();
   } catch (error) {
     throw new ReportingQueryError(table, { cause: error });
   }
 }
 
+function queryCoverage(
+  database: ReportingDatabase,
+  table: string,
+  sql: string,
+) {
+  try {
+    return parseCoverage(database.prepare(sql).get(), table);
+  } catch (error) {
+    if (error instanceof ReportingQueryError) {
+      throw error;
+    }
+    throw new ReportingQueryError(table, { cause: error });
+  }
+}
+
 export function loadWeeklySalesSourceRows(
+  selectedRange: DateRange,
   databasePath?: string,
-): WeeklySalesSourceRows {
+): WeeklySalesSourceData {
   try {
     return withReadOnlyDatabase((database) => {
       const accountManagers = queryRows(
@@ -276,7 +328,9 @@ export function loadWeeklySalesSourceRows(
           owner_co_number,
           total_income_adj,
           modified_on
-        FROM job_cost_change_orders`,
+        FROM job_cost_change_orders
+        WHERE co_date BETWEEN :start AND :end`,
+        { start: selectedRange.start, end: selectedRange.end },
       ).map(parseChangeOrderRow);
 
       const newJobs = queryRows(
@@ -292,10 +346,39 @@ export function loadWeeklySalesSourceRows(
           state,
           opened_date,
           bd_linked
-        FROM rpt_new_jobs_opened`,
+        FROM rpt_new_jobs_opened
+        WHERE opened_date BETWEEN :start AND :end`,
+        { start: selectedRange.start, end: selectedRange.end },
       ).map(parseNewJobRow);
 
-      return { accountManagers, changeOrders, newJobs };
+      const newJobSourceCoverage = queryCoverage(
+        database,
+        "rpt_new_jobs_opened",
+        `SELECT
+          MIN(opened_date) AS start,
+          MAX(opened_date) AS end
+        FROM rpt_new_jobs_opened`,
+      );
+
+      const changeOrderSourceCoverage = queryCoverage(
+        database,
+        "job_cost_change_orders",
+        `SELECT
+          MIN(co_date) AS start,
+          MAX(co_date) AS end
+        FROM job_cost_change_orders`,
+      );
+
+      return {
+        selectedRange: { ...selectedRange },
+        sourceCoverage: {
+          newJobs: newJobSourceCoverage,
+          changeOrders: changeOrderSourceCoverage,
+        },
+        accountManagers,
+        changeOrders,
+        newJobs,
+      };
     }, databasePath);
   } catch (error) {
     if (
@@ -316,18 +399,6 @@ function compareStrings(left: string, right: string) {
     numeric: true,
     sensitivity: "base",
   });
-}
-
-function deriveCoverage(values: readonly string[]): DateCoverage | null {
-  if (values.length === 0) {
-    return null;
-  }
-
-  const sortedValues = [...values].sort(compareStrings);
-  return {
-    start: sortedValues[0],
-    end: sortedValues[sortedValues.length - 1],
-  };
 }
 
 const accountMeasureKeys = [
@@ -373,7 +444,7 @@ function sumAccountMeasure(
 }
 
 export function buildWeeklySalesReportModel(
-  sourceRows: WeeklySalesSourceRows,
+  sourceRows: WeeklySalesSourceData,
 ): WeeklySalesReportModel {
   const newJobRows = [...sourceRows.newJobs]
     .sort(
@@ -449,8 +520,9 @@ export function buildWeeklySalesReportModel(
 
   return {
     metadata: {
-      weeklyExtractStart: WEEKLY_EXTRACT_START,
-      weeklyExtractEnd: WEEKLY_EXTRACT_END,
+      selectedRange: { ...sourceRows.selectedRange },
+      newJobSourceCoverage: sourceRows.sourceCoverage.newJobs,
+      changeOrderSourceCoverage: sourceRows.sourceCoverage.changeOrders,
       accountSnapshotDate: ACCOUNT_SNAPSHOT_DATE,
     },
     kpis: {
@@ -485,14 +557,12 @@ export function buildWeeklySalesReportModel(
       rows: newJobRows,
       count: newJobRows.length,
       contractTotal: newJobContractTotal,
-      coverage: deriveCoverage(newJobRows.map((row) => row.openedDate)),
     },
     changeOrders: {
       rows: changeOrderRows,
       count: changeOrderRows.length,
       netAdjustment: changeOrderNetAdjustment,
       negativeAdjustmentCount,
-      coverage: deriveCoverage(changeOrderRows.map((row) => row.coDate)),
     },
     accountManagers: {
       rows: accountManagerRows,
@@ -502,9 +572,12 @@ export function buildWeeklySalesReportModel(
   };
 }
 
-export async function getWeeklySalesReport(databasePath?: string) {
+export async function getWeeklySalesReport(
+  selectedRange: DateRange,
+  databasePath?: string,
+) {
   await connection();
   return buildWeeklySalesReportModel(
-    loadWeeklySalesSourceRows(databasePath),
+    loadWeeklySalesSourceRows(selectedRange, databasePath),
   );
 }

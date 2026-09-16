@@ -1,6 +1,9 @@
+import { copyFileSync, mkdtempSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
 import path from "node:path";
 
-import { describe, expect, it } from "vitest";
+import Database from "better-sqlite3";
+import { afterEach, describe, expect, it } from "vitest";
 
 import {
   calculatePercentChange,
@@ -11,23 +14,55 @@ import {
 } from "@/lib/reporting/format";
 import { ReportingDatabaseError } from "@/lib/reporting/database";
 import {
+  DEFAULT_WEEKLY_SALES_DATE_RANGE,
+  type DateRange,
+} from "@/lib/reporting/date-range";
+import {
   buildWeeklySalesReportModel,
   loadWeeklySalesSourceRows,
-  type WeeklySalesSourceRows,
+  type WeeklySalesSourceData,
 } from "@/lib/reporting/weekly-sales";
 
-const model = buildWeeklySalesReportModel(loadWeeklySalesSourceRows());
+const temporaryDirectories: string[] = [];
+
+afterEach(() => {
+  for (const directory of temporaryDirectories.splice(0)) {
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+function loadModel(range: DateRange = DEFAULT_WEEKLY_SALES_DATE_RANGE) {
+  return buildWeeklySalesReportModel(loadWeeklySalesSourceRows(range));
+}
+
+const model = loadModel();
+
+function withSourceMetadata(
+  rows: Pick<
+    WeeklySalesSourceData,
+    "accountManagers" | "changeOrders" | "newJobs"
+  >,
+): WeeklySalesSourceData {
+  return {
+    ...rows,
+    selectedRange: { ...DEFAULT_WEEKLY_SALES_DATE_RANGE },
+    sourceCoverage: {
+      newJobs: null,
+      changeOrders: null,
+    },
+  };
+}
 
 describe("weekly sales report model", () => {
-  it("matches the current snapshot KPI values", () => {
+  it("matches the default selected-period KPI values", () => {
     expect(model.kpis.newJobs).toEqual({
       count: 4,
       contractTotal: 188125,
     });
     expect(model.kpis.changeOrders).toEqual({
-      count: 6,
-      netAdjustment: 73274.76,
-      negativeAdjustmentCount: 1,
+      count: 1,
+      netAdjustment: 38334.36,
+      negativeAdjustmentCount: 0,
     });
     expect(model.kpis.salesYtd.reportingYearYtd).toBe(32225435.34);
     expect(model.kpis.salesYtd.priorYearYtd).toBe(26684515.3);
@@ -43,7 +78,64 @@ describe("weekly sales report model", () => {
     });
   });
 
-  it("maps, sorts, and totals new jobs", () => {
+  it("filters alternate and single-day date ranges inclusively", () => {
+    const augustModel = loadModel({
+      start: "2026-08-12",
+      end: "2026-08-31",
+    });
+    const singleDayModel = loadModel({
+      start: "2026-09-10",
+      end: "2026-09-10",
+    });
+
+    expect(augustModel.kpis.newJobs).toEqual({
+      count: 0,
+      contractTotal: 0,
+    });
+    expect(augustModel.kpis.changeOrders).toEqual({
+      count: 4,
+      netAdjustment: 31990.4,
+      negativeAdjustmentCount: 1,
+    });
+    expect(singleDayModel.kpis.newJobs).toEqual({
+      count: 3,
+      contractTotal: 159125,
+    });
+    expect(singleDayModel.kpis.changeOrders.count).toBe(0);
+  });
+
+  it("keeps full source coverage independent from filtered rows", () => {
+    const emptyRangeModel = loadModel({
+      start: "2025-01-01",
+      end: "2025-01-31",
+    });
+
+    expect(emptyRangeModel.newJobs.rows).toHaveLength(0);
+    expect(emptyRangeModel.changeOrders.rows).toHaveLength(0);
+    expect(emptyRangeModel.metadata.newJobSourceCoverage).toEqual({
+      start: "2026-09-09",
+      end: "2026-09-10",
+    });
+    expect(emptyRangeModel.metadata.changeOrderSourceCoverage).toEqual({
+      start: "2026-08-12",
+      end: "2026-09-09",
+    });
+  });
+
+  it("keeps account-manager data invariant across date ranges", () => {
+    const alternate = loadModel({
+      start: "2026-08-12",
+      end: "2026-08-31",
+    });
+
+    expect(alternate.accountManagers).toEqual(model.accountManagers);
+    expect(alternate.kpis.salesYtd).toEqual(model.kpis.salesYtd);
+    expect(alternate.kpis.last7DaysSales).toBe(model.kpis.last7DaysSales);
+    expect(alternate.kpis.contractClosed).toEqual(model.kpis.contractClosed);
+    expect(alternate.kpis.pendingContract).toEqual(model.kpis.pendingContract);
+  });
+
+  it("maps, sorts, and totals selected new jobs", () => {
     expect(model.newJobs.rows.map((row) => row.jobId)).toEqual([
       "5398",
       "5401",
@@ -54,26 +146,21 @@ describe("weekly sales report model", () => {
       "Camden Design-Garage Sealant",
     );
     expect(model.newJobs.rows.at(-1)?.bdLinked).toBe("NONE");
-    expect(model.newJobs.coverage).toEqual({
-      start: "2026-09-09",
-      end: "2026-09-10",
-    });
   });
 
-  it("uses co_date coverage and stable change-order ordering", () => {
-    expect(model.changeOrders.rows.map((row) => row.coDate)).toEqual([
+  it("uses co_date filtering and stable change-order ordering", () => {
+    const augustModel = loadModel({
+      start: "2026-08-12",
+      end: "2026-08-31",
+    });
+
+    expect(augustModel.changeOrders.rows.map((row) => row.coDate)).toEqual([
       "2026-08-12",
       "2026-08-13",
       "2026-08-19",
       "2026-08-31",
-      "2026-09-03",
-      "2026-09-09",
     ]);
-    expect(model.changeOrders.coverage).toEqual({
-      start: "2026-08-12",
-      end: "2026-09-09",
-    });
-    expect(model.changeOrders.rows[0].modifiedOn).toBe(
+    expect(augustModel.changeOrders.rows[0].modifiedOn).toBe(
       "2026-09-08 07:51:00",
     );
   });
@@ -104,7 +191,7 @@ describe("weekly sales report model", () => {
       projectClassName: string,
       sortOrder: number | null,
       salesReportingYearYtd: number,
-    ): WeeklySalesSourceRows["accountManagers"][number] => ({
+    ): WeeklySalesSourceData["accountManagers"][number] => ({
       projectClassId,
       projectClassName,
       sortOrder,
@@ -118,7 +205,7 @@ describe("weekly sales report model", () => {
       contractValueClosedCurrent: 0,
       contractValueClosedPrior: 0,
     });
-    const fixture: WeeklySalesSourceRows = {
+    const fixture = withSourceMetadata({
       accountManagers: [
         accountManager("Z", "Zulu", null, 1),
         accountManager("EMPTY", "Excluded", 1, 0),
@@ -127,7 +214,7 @@ describe("weekly sales report model", () => {
       ],
       changeOrders: [],
       newJobs: [],
-    };
+    });
 
     expect(
       buildWeeklySalesReportModel(fixture).accountManagers.rows.map(
@@ -137,17 +224,48 @@ describe("weekly sales report model", () => {
   });
 
   it("builds a truthful empty model", () => {
-    const emptySource: WeeklySalesSourceRows = {
-      accountManagers: [],
-      changeOrders: [],
-      newJobs: [],
-    };
-    const emptyModel = buildWeeklySalesReportModel(emptySource);
+    const emptyModel = buildWeeklySalesReportModel(
+      withSourceMetadata({
+        accountManagers: [],
+        changeOrders: [],
+        newJobs: [],
+      }),
+    );
 
     expect(emptyModel.kpis.newJobs.count).toBe(0);
     expect(emptyModel.kpis.salesYtd.percentChange).toBeNull();
-    expect(emptyModel.newJobs.coverage).toBeNull();
-    expect(emptyModel.changeOrders.coverage).toBeNull();
+    expect(emptyModel.metadata.newJobSourceCoverage).toBeNull();
+    expect(emptyModel.metadata.changeOrderSourceCoverage).toBeNull();
+  });
+
+  it("opens the database again and reflects changes to a temporary copy", () => {
+    const directory = mkdtempSync(path.join(tmpdir(), "cfi-weekly-sales-"));
+    temporaryDirectories.push(directory);
+    const databasePath = path.join(directory, "reporting.sqlite");
+    copyFileSync(
+      path.join(
+        process.cwd(),
+        "_PROJECT/data/reporting/cfi_reporting.sqlite",
+      ),
+      databasePath,
+    );
+
+    const before = buildWeeklySalesReportModel(
+      loadWeeklySalesSourceRows(DEFAULT_WEEKLY_SALES_DATE_RANGE, databasePath),
+    );
+    const writableDatabase = new Database(databasePath);
+    writableDatabase
+      .prepare(
+        "UPDATE rpt_new_jobs_opened SET original_contract = ? WHERE job_id = ?",
+      )
+      .run(30000, "5398");
+    writableDatabase.close();
+    const after = buildWeeklySalesReportModel(
+      loadWeeklySalesSourceRows(DEFAULT_WEEKLY_SALES_DATE_RANGE, databasePath),
+    );
+
+    expect(before.newJobs.contractTotal).toBe(188125);
+    expect(after.newJobs.contractTotal).toBe(189125);
   });
 });
 
@@ -188,8 +306,8 @@ describe("reporting helpers", () => {
       "_PROJECT/data/reporting/does-not-exist.sqlite",
     );
 
-    expect(() => loadWeeklySalesSourceRows(missingPath)).toThrow(
-      ReportingDatabaseError,
-    );
+    expect(() =>
+      loadWeeklySalesSourceRows(DEFAULT_WEEKLY_SALES_DATE_RANGE, missingPath),
+    ).toThrow(ReportingDatabaseError);
   });
 });

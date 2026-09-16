@@ -71,12 +71,6 @@
   padding: 0.55rem 0.9rem;
 }
 
-.dateControls button {
-  background: var(--ce-color-surface-alt);
-  border: var(--ce-border-width) solid var(--ce-color-divider);
-  color: var(--ce-color-muted);
-}
-
 .dateControls button:disabled,
 .primaryButton:disabled,
 .secondaryButton:disabled {
@@ -110,7 +104,8 @@
 }
 
 .primaryButton,
-.secondaryButton {
+.secondaryButton,
+.primaryLink {
   transition:
     background-color var(--ce-duration-interaction) var(--ce-ease-standard),
     border-color var(--ce-duration-interaction) var(--ce-ease-standard),
@@ -123,7 +118,21 @@
   color: var(--ce-color-on-action);
 }
 
-.primaryButton:not(:disabled):hover {
+.primaryLink {
+  align-items: center;
+  background: var(--ce-color-action);
+  border: var(--ce-border-width) solid var(--ce-color-action);
+  border-radius: var(--ce-radius-control);
+  color: var(--ce-color-on-action);
+  display: inline-flex;
+  font-weight: var(--ce-font-weight-action);
+  min-height: var(--ce-control-min-height);
+  padding: 0.55rem 0.9rem;
+  text-decoration: none;
+}
+
+.primaryButton:not(:disabled):hover,
+.primaryLink:hover {
   background: var(--ce-color-action-hover-bg);
   border-color: var(--ce-color-action-hover-border);
   color: var(--ce-color-action-hover-text);
@@ -161,6 +170,101 @@
   max-width: 100%;
   overflow-x: auto;
   padding: 0.25rem 0 1rem;
+}
+
+.skeletonSheet {
+  color: var(--report-muted);
+}
+
+.skeletonStatus {
+  left: 0;
+  margin: 0;
+  position: absolute;
+  text-align: center;
+  top: 0.12in;
+  width: 100%;
+}
+
+.skeletonHeader {
+  align-items: center;
+  display: grid;
+  gap: 22px;
+  grid-template-columns: 168px 1fr 205px;
+  height: 48px;
+}
+
+.skeletonIdentity,
+.skeletonTitle,
+.skeletonMeta,
+.skeletonKpi,
+.skeletonSectionHeading,
+.skeletonTableBlock,
+.skeletonAccountRow {
+  animation: skeletonPulse 1.15s ease-in-out infinite alternate;
+  background: var(--ce-color-surface-alt);
+  border: 1px solid var(--ce-color-divider);
+  display: block;
+}
+
+.skeletonIdentity {
+  height: 22px;
+  width: 116px;
+}
+
+.skeletonTitle {
+  height: 34px;
+}
+
+.skeletonMeta {
+  height: 28px;
+}
+
+.skeletonRule {
+  background: var(--ce-color-divider);
+  height: 4px;
+  margin: 10px 0 12px;
+}
+
+.skeletonKpis {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(6, 1fr);
+  margin-bottom: 12px;
+}
+
+.skeletonKpi {
+  height: 58px;
+}
+
+.skeletonSectionHeading {
+  height: 14px;
+  margin: 7px 0 5px;
+  width: 38%;
+}
+
+.skeletonTableBlock {
+  height: 68px;
+  width: 100%;
+}
+
+.skeletonAccountRows {
+  display: grid;
+  gap: 3px;
+}
+
+.skeletonAccountRow {
+  height: 18px;
+  width: 100%;
+}
+
+@keyframes skeletonPulse {
+  from {
+    opacity: 0.52;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 .reportSheet {
@@ -499,5 +603,17 @@
   .reportSheet {
     box-shadow: none;
     margin: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeletonIdentity,
+  .skeletonTitle,
+  .skeletonMeta,
+  .skeletonKpi,
+  .skeletonSectionHeading,
+  .skeletonTableBlock,
+  .skeletonAccountRow {
+    animation: none;
   }
 }

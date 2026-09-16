@@ -1,14 +1,21 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
 
 import { ReportingDatabaseError } from "@/lib/reporting/database";
 import {
+  resolveDateRangeSearchValues,
+  type DateRange,
+} from "@/lib/reporting/date-range";
+import {
+  ACCOUNT_SNAPSHOT_DATE,
   getWeeklySalesReport,
   ReportingQueryError,
 } from "@/lib/reporting/weekly-sales";
 
+import { ReportExperience } from "./report-experience";
 import { ReportLoadError } from "./report-load-error";
-import { ReportToolbar } from "./report-toolbar";
+import { ReportSkeleton } from "./report-skeleton";
 import styles from "./weekly-sales-report.module.css";
 import { WeeklySalesReport } from "./weekly-sales-report";
 
@@ -19,23 +26,31 @@ export const metadata: Metadata = {
 };
 
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 interface WeeklySalesPageProps {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
-export default async function WeeklySalesPage({
-  searchParams,
-}: WeeklySalesPageProps) {
-  const resolvedSearchParams = await searchParams;
-  const printValue = resolvedSearchParams.print;
-  const isPrintMode = Array.isArray(printValue)
-    ? printValue.includes("1")
-    : printValue === "1";
+function PageHeader() {
+  return (
+    <div className={styles.pageHeader}>
+      <div className={styles.pageHeaderText}>
+        <Link className={styles.backLink} href="/reports">
+          ← All reports
+        </Link>
+        <h2>Weekly Sales Summary</h2>
+        <p>Static reporting extract with a printable one-page view.</p>
+      </div>
+    </div>
+  );
+}
+
+async function WeeklySalesReportResult({ range }: { range: DateRange }) {
   let report: Awaited<ReturnType<typeof getWeeklySalesReport>>;
 
   try {
-    report = await getWeeklySalesReport();
+    report = await getWeeklySalesReport(range);
   } catch (error) {
     const message =
       error instanceof ReportingQueryError
@@ -47,31 +62,70 @@ export default async function WeeklySalesPage({
     return <ReportLoadError message={message} />;
   }
 
-  return (
-    <div className={`${styles.page} ${isPrintMode ? styles.printMode : ""}`}>
-      {!isPrintMode ? (
-        <>
-          <div className={styles.pageHeader}>
-            <div className={styles.pageHeaderText}>
-              <Link className={styles.backLink} href="/reports">
-                ← All reports
-              </Link>
-              <h2>Weekly Sales Summary</h2>
-              <p>Static reporting extract with a printable one-page view.</p>
-            </div>
-          </div>
-          <ReportToolbar />
-        </>
-      ) : null}
+  return <WeeklySalesReport report={report} />;
+}
 
-      <div
-        className={styles.reportViewport}
-        role="region"
-        aria-label="Scrollable weekly sales report"
-        tabIndex={0}
-      >
-        <WeeklySalesReport report={report} />
+function InvalidDateRange({ message }: { message: string }) {
+  return (
+    <div className={styles.statePanel} role="alert">
+      <h1>Choose a valid date range</h1>
+      <p>{message}</p>
+      <Link className={styles.primaryLink} href="/reports/weekly-sales">
+        Use default dates
+      </Link>
+    </div>
+  );
+}
+
+export default async function WeeklySalesPage({
+  searchParams,
+}: WeeklySalesPageProps) {
+  const resolvedSearchParams = await searchParams;
+  const rangeResult = resolveDateRangeSearchValues({
+    start: resolvedSearchParams.start,
+    end: resolvedSearchParams.end,
+  });
+  const printValue = resolvedSearchParams.print;
+  const isPrintMode = Array.isArray(printValue)
+    ? printValue.includes("1")
+    : printValue === "1";
+
+  if (!rangeResult.ok) {
+    return (
+      <div className={`${styles.page} ${isPrintMode ? styles.printMode : ""}`}>
+        {!isPrintMode ? <PageHeader /> : null}
+        <InvalidDateRange message={rangeResult.message} />
       </div>
+    );
+  }
+
+  const range = rangeResult.range;
+  const result = (
+    <Suspense
+      key={`${range.start}:${range.end}`}
+      fallback={<ReportSkeleton />}
+    >
+      <WeeklySalesReportResult range={range} />
+    </Suspense>
+  );
+
+  if (isPrintMode) {
+    return (
+      <div className={`${styles.page} ${styles.printMode}`}>
+        <div className={styles.reportViewport}>{result}</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className={styles.page}>
+      <PageHeader />
+      <ReportExperience
+        accountSnapshotDate={ACCOUNT_SNAPSHOT_DATE}
+        appliedRange={range}
+      >
+        {result}
+      </ReportExperience>
     </div>
   );
 }

@@ -32,7 +32,7 @@ function Amount({
 }
 
 function coverageLabel(
-  coverage: WeeklySalesReportModel["newJobs"]["coverage"],
+  coverage: WeeklySalesReportModel["metadata"]["newJobSourceCoverage"],
 ) {
   if (!coverage) {
     return "No loaded date coverage";
@@ -42,6 +42,9 @@ function coverageLabel(
 
 export function WeeklySalesReport({ report }: WeeklySalesReportProps) {
   const percentChange = report.kpis.salesYtd.percentChange;
+  const selectedPeriod = `${formatIsoDate(
+    report.metadata.selectedRange.start,
+  )}–${formatIsoDate(report.metadata.selectedRange.end)}`;
   const percentDirection =
     percentChange === null || percentChange === 0
       ? "No comparable change"
@@ -65,11 +68,7 @@ export function WeeklySalesReport({ report }: WeeklySalesReportProps) {
         </div>
         <div className={styles.reportMeta}>
           <span>
-            Weekly extracts{" "}
-            <strong>
-              {formatIsoDate(report.metadata.weeklyExtractStart)}–
-              {formatIsoDate(report.metadata.weeklyExtractEnd)}
-            </strong>
+            Selected period <strong>{selectedPeriod}</strong>
           </span>
           <span>
             Account snapshot{" "}
@@ -82,7 +81,7 @@ export function WeeklySalesReport({ report }: WeeklySalesReportProps) {
 
       <section className={styles.kpiGrid} aria-label="Report key metrics">
         <div className={styles.kpiCard}>
-          <p className={styles.kpiLabel}>New jobs — loaded extract</p>
+          <p className={styles.kpiLabel}>New jobs — selected period</p>
           <p className={styles.kpiValue}>
             {formatInteger(report.kpis.newJobs.count)}
           </p>
@@ -92,7 +91,7 @@ export function WeeklySalesReport({ report }: WeeklySalesReportProps) {
         </div>
 
         <div className={styles.kpiCard}>
-          <p className={styles.kpiLabel}>Change orders — loaded extract</p>
+          <p className={styles.kpiLabel}>Change orders — selected period</p>
           <p className={styles.kpiValue}>
             {formatInteger(report.kpis.changeOrders.count)}
           </p>
@@ -161,8 +160,11 @@ export function WeeklySalesReport({ report }: WeeklySalesReportProps) {
 
       <section className={styles.section} aria-labelledby="new-jobs-heading">
         <div className={styles.sectionHeading}>
-          <h2 id="new-jobs-heading">New Jobs Opened — Loaded Extract</h2>
-          <p>Opened-date coverage: {coverageLabel(report.newJobs.coverage)}</p>
+          <h2 id="new-jobs-heading">New Jobs Opened — Selected Period</h2>
+          <p>
+            Loaded opened-date coverage:{" "}
+            {coverageLabel(report.metadata.newJobSourceCoverage)}
+          </p>
         </div>
         <table className={styles.table}>
           <caption className="sr-only">
@@ -188,7 +190,8 @@ export function WeeklySalesReport({ report }: WeeklySalesReportProps) {
             {report.newJobs.rows.length === 0 ? (
               <tr>
                 <td colSpan={8} className={styles.emptyCell}>
-                  No new jobs are present in the loaded extract.
+                  No new jobs are present in the local snapshot for{" "}
+                  {selectedPeriod}.
                 </td>
               </tr>
             ) : (
@@ -227,9 +230,12 @@ export function WeeklySalesReport({ report }: WeeklySalesReportProps) {
       <section className={styles.section} aria-labelledby="change-orders-heading">
         <div className={styles.sectionHeading}>
           <h2 id="change-orders-heading">
-            Job Cost Change Orders — Loaded Extract
+            Job Cost Change Orders — Selected Period
           </h2>
-          <p>CO-date coverage: {coverageLabel(report.changeOrders.coverage)}</p>
+          <p>
+            Loaded CO-date coverage:{" "}
+            {coverageLabel(report.metadata.changeOrderSourceCoverage)}
+          </p>
         </div>
         <table className={styles.table}>
           <caption className="sr-only">
@@ -254,7 +260,8 @@ export function WeeklySalesReport({ report }: WeeklySalesReportProps) {
             {report.changeOrders.rows.length === 0 ? (
               <tr>
                 <td colSpan={5} className={styles.emptyCell}>
-                  No change orders are present in the loaded extract.
+                  No change orders are present in the local snapshot for{" "}
+                  {selectedPeriod}.
                 </td>
               </tr>
             ) : (
@@ -431,15 +438,16 @@ export function WeeklySalesReport({ report }: WeeklySalesReportProps) {
       </section>
 
       <aside className={styles.coverageCallout} aria-label="Data coverage">
-        <strong>Data coverage</strong> — Static extract: {report.newJobs.count}{" "}
-        new jobs totaling <Amount value={report.newJobs.contractTotal} /> opened{" "}
-        {coverageLabel(report.newJobs.coverage)}; {report.changeOrders.count}{" "}
-        change orders net <Amount value={report.changeOrders.netAdjustment} />
-        {" "}with CO dates {coverageLabel(report.changeOrders.coverage)}.
-        Last-seven-day sales are source-pre-aggregated; the exact boundary is
-        unavailable. YTD/calendar and contract comparison periods are
-        source-provided and unconfirmed. Source currency is not confirmed.
-        This is not live or exhaustive data.
+        <strong>Data coverage</strong> — Selected period: {selectedPeriod}.
+        Loaded new-job dates: {coverageLabel(report.metadata.newJobSourceCoverage)};
+        loaded change-order dates:{" "}
+        {coverageLabel(report.metadata.changeOrderSourceCoverage)}. Results outside
+        or wider than loaded coverage may be partial; an empty result does not
+        prove no business activity occurred. Account-manager metrics remain the
+        unfiltered {formatIsoDate(report.metadata.accountSnapshotDate)} source
+        snapshot, and the source last-seven-day boundary is unavailable. Source
+        currency is not confirmed. This static local snapshot is not live or
+        exhaustive.
       </aside>
 
       <footer className={styles.reportFooter}>

@@ -1,53 +1,35 @@
 import puppeteer from "puppeteer";
 
+import {
+  buildPdfRenderUrl,
+  getPdfFilename,
+  PdfConfigurationError,
+  resolvePdfDateRange,
+} from "./pdf-request";
+
 export const runtime = "nodejs";
-
-const PDF_FILENAME = "cfi-weekly-sales-summary-2026-09-13.pdf";
-const REPORT_PATH = "/reports/weekly-sales?print=1";
-
-class PdfConfigurationError extends Error {}
-
-function resolveRenderUrl(request: Request) {
-  const configuredOrigin = process.env.REPORT_RENDER_ORIGIN;
-  const requestUrl = new URL(request.url);
-
-  if (!configuredOrigin) {
-    if (!["localhost", "127.0.0.1", "::1"].includes(requestUrl.hostname)) {
-      throw new PdfConfigurationError(
-        "PDF generation requires REPORT_RENDER_ORIGIN in this environment.",
-      );
-    }
-
-    return new URL(REPORT_PATH, requestUrl.origin);
-  }
-
-  let origin: URL;
-  try {
-    origin = new URL(configuredOrigin);
-  } catch (error) {
-    throw new PdfConfigurationError(
-      "REPORT_RENDER_ORIGIN must be a valid HTTP or HTTPS origin.",
-      { cause: error },
-    );
-  }
-
-  if (!["http:", "https:"].includes(origin.protocol)) {
-    throw new PdfConfigurationError(
-      "REPORT_RENDER_ORIGIN must use HTTP or HTTPS.",
-    );
-  }
-
-  origin.pathname = "/";
-  origin.search = "";
-  origin.hash = "";
-  return new URL(REPORT_PATH, origin);
-}
 
 export async function GET(request: Request) {
   let browser: Awaited<ReturnType<typeof puppeteer.launch>> | undefined;
+  const requestUrl = new URL(request.url);
+  const rangeResult = resolvePdfDateRange(requestUrl);
+
+  if (!rangeResult.ok) {
+    return new Response(rangeResult.message, {
+      status: 400,
+      headers: {
+        "Cache-Control": "no-store",
+        "Content-Type": "text/plain; charset=utf-8",
+      },
+    });
+  }
 
   try {
-    const renderUrl = resolveRenderUrl(request);
+    const renderUrl = buildPdfRenderUrl(
+      requestUrl,
+      rangeResult.range,
+      process.env.REPORT_RENDER_ORIGIN,
+    );
     browser = await puppeteer.launch({ headless: true });
     const page = await browser.newPage();
     await page.emulateMediaType("print");
@@ -77,7 +59,7 @@ export async function GET(request: Request) {
       status: 200,
       headers: {
         "Cache-Control": "no-store",
-        "Content-Disposition": `attachment; filename="${PDF_FILENAME}"`,
+        "Content-Disposition": `attachment; filename="${getPdfFilename(rangeResult.range)}"`,
         "Content-Type": "application/pdf",
       },
     });

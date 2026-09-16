@@ -24,8 +24,9 @@ REPORT_RENDER_ORIGIN=https://reports.example.com npm run start
 ```
 
 The configured value must be an HTTP or HTTPS origin. The PDF endpoint always
-uses the fixed `/reports/weekly-sales?print=1` path and does not accept a
-caller-supplied render URL.
+uses the fixed `/reports/weekly-sales` path with validated `start` and `end`
+dates plus application-owned `print=1`; it does not accept a caller-supplied
+render URL.
 
 Run the focused report tests with `npm test`, lint with `npm run lint`, and
 create a production build with `npm run build`.
