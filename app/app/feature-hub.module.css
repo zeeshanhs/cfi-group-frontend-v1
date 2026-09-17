@@ -1,0 +1,260 @@
+.page {
+  min-height: 100dvh;
+  padding-bottom: 3rem;
+  background: var(--ce-color-surface-alt);
+  color: var(--ce-color-text);
+}
+
+.header {
+  min-height: 72px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 0 var(--ce-space-gutter);
+  background: var(--ce-color-surface-inverse);
+  color: var(--ce-color-on-inverse);
+}
+
+.productName {
+  border-left: 1px solid #5a5a5a;
+  padding-left: 20px;
+  font-weight: var(--ce-font-weight-heading);
+}
+
+.environmentStrip {
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid var(--ce-color-divider);
+  padding: 4px var(--ce-space-gutter);
+  color: var(--ce-color-muted);
+  font-size: var(--ce-text-small);
+  text-align: center;
+}
+
+.intro,
+.featureGrid,
+.disclosure {
+  width: min(var(--ce-content-max), calc(100% - (2 * var(--ce-space-gutter))));
+  margin-inline: auto;
+}
+
+.intro {
+  padding: clamp(3rem, 8vw, 6rem) 0 clamp(2rem, 5vw, 3rem);
+}
+
+.eyebrow,
+.cardEyebrow {
+  margin: 0 0 0.5rem;
+  color: var(--ce-color-action);
+  font-size: 0.75rem;
+  font-weight: var(--ce-font-weight-action);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.intro h1 {
+  max-width: 16ch;
+  margin: 0;
+  font-family: var(--ce-font-display);
+  font-size: var(--ce-text-title);
+  font-weight: var(--ce-font-weight-heading);
+  line-height: var(--ce-line-heading);
+}
+
+.intro > p:last-child {
+  max-width: var(--ce-measure-readable);
+  margin: 1rem 0 0;
+  color: var(--ce-color-muted);
+  font-size: 1.0625rem;
+}
+
+.featureGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  border: 1px solid var(--ce-color-divider);
+  background: var(--ce-color-divider);
+}
+
+.featureCard {
+  min-height: 330px;
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr);
+  background: var(--ce-color-surface);
+}
+
+.cardNumber {
+  border-right: 1px solid var(--ce-color-divider);
+  padding-top: 2rem;
+  color: var(--ce-color-action);
+  font-size: 0.75rem;
+  font-weight: var(--ce-font-weight-action);
+  letter-spacing: 0.08em;
+  text-align: center;
+}
+
+.cardBody {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: clamp(1.5rem, 4vw, 2.5rem);
+}
+
+.cardBody h2 {
+  margin: 0;
+  font-family: var(--ce-font-display);
+  font-size: var(--ce-text-section);
+  line-height: var(--ce-line-heading);
+}
+
+.cardDescription {
+  max-width: 44ch;
+  margin: 1rem 0;
+  color: var(--ce-color-muted);
+}
+
+.cardDetail {
+  margin: 0 0 2rem;
+  font-size: var(--ce-text-small);
+  font-weight: var(--ce-font-weight-heading);
+}
+
+.featureLink {
+  width: 100%;
+  min-height: var(--ce-control-min-height);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  box-sizing: border-box;
+  margin-top: auto;
+  border: 1px solid var(--ce-color-action);
+  padding: 0.75rem 1rem;
+  background: var(--ce-color-action);
+  color: var(--ce-color-on-action);
+  font-weight: var(--ce-font-weight-action);
+  text-decoration: none;
+  transition:
+    background-color var(--ce-duration-interaction) var(--ce-ease-standard),
+    color var(--ce-duration-interaction) var(--ce-ease-standard);
+}
+
+.featureLink:hover {
+  background: var(--ce-color-action-hover-bg);
+  color: var(--ce-color-action-hover-text);
+}
+
+.disclosure {
+  box-sizing: border-box;
+  margin-top: 2rem;
+  margin-bottom: 0;
+  border-left: 3px solid var(--ce-color-action);
+  padding: 0.25rem 0 0.25rem 1rem;
+  color: var(--ce-color-muted);
+  font-size: var(--ce-text-small);
+}
+
+.accountActions {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.accountActions a,
+.accountActions button {
+  min-height: var(--ce-control-min-height);
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid #767676;
+  padding: 0.5rem 0.75rem;
+  background: transparent;
+  color: var(--ce-color-on-inverse);
+  font-weight: var(--ce-font-weight-heading);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.accountActions a:hover,
+.accountActions button:hover:not(:disabled) {
+  border-color: var(--ce-color-on-inverse);
+  background: var(--ce-color-surface);
+  color: var(--ce-color-text);
+}
+
+.accountActions a:focus-visible,
+.accountActions button:focus-visible {
+  outline-color: var(--ce-color-focus-inverse);
+}
+
+.accountActions button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.accountError {
+  position: absolute;
+  z-index: 2;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  width: min(20rem, calc(100vw - 2rem));
+  margin: 0;
+  border-left: 3px solid var(--ce-color-action);
+  padding: 0.75rem;
+  background: var(--ce-color-surface);
+  color: var(--ce-color-text);
+  box-shadow: var(--ce-shadow-card-hover);
+  font-size: var(--ce-text-small);
+}
+
+@media (max-width: 48rem) {
+  .header {
+    min-height: 64px;
+    gap: 0.75rem;
+    padding-inline: 1rem;
+  }
+
+  .productName {
+    display: none;
+  }
+
+  .accountActions {
+    gap: 0.25rem;
+  }
+
+  .accountActions a,
+  .accountActions button {
+    padding-inline: 0.625rem;
+  }
+
+  .featureGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .featureCard {
+    min-height: 290px;
+  }
+}
+
+@media (max-width: 25rem) {
+  .header :global(img) {
+    width: 112px;
+  }
+
+  .featureCard {
+    grid-template-columns: 44px minmax(0, 1fr);
+  }
+
+  .cardBody {
+    padding: 1.25rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .featureLink {
+    transition: none;
+  }
+}

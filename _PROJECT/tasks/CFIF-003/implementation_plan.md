@@ -203,7 +203,7 @@ Implement the first usable branded path:
 
 - `/login` with synthetic designation, visible labels, pending/rejected/failure states, and the supplied logo or disclosed text fallback;
 - the authenticated charcoal header, synthetic mode strip, desktop chat sidebar, and core narrow-screen navigation foundation;
-- `/app` with an unpersisted empty workspace, suggestions, visible **Your question** label, and composer;
+- `/app` as the authenticated feature hub and `/app/chat` as the unpersisted empty workspace with suggestions, visible **Your question** label, and composer;
 - `/app/chats/[chatId]` with ordered messages, safe Markdown, attachment summaries, request progress, retry where eligible, and per-chat drafts;
 - chat switching, **New chat**, first-send navigation, Enter/Shift+Enter/IME behavior, refresh recovery, and logout; and
 - visible focus, 44px targets, textual state feedback, and reduced-motion-safe transitions for the implemented surface.
@@ -227,7 +227,7 @@ npm run build
 
 Also verify against a temporary database copy:
 
-1. Blank `/app` creates no chat.
+1. Blank `/app/chat` creates no chat.
 2. First send creates exactly one chat, user message, and logical request.
 3. Reusing the client submission ID creates no duplicates.
 4. Refresh during pending processing recovers the stored request rather than resubmitting.
@@ -361,7 +361,7 @@ Inspect an early report-ready screen before propagating layout fixes. Treat the 
 
 ### Checkpoint 6 — Write the exact demonstrator guide
 
-Create `_PROJECT/tasks/CFIF-003/DEMO_GUIDE.md` with:
+Create `docs/data-insights-chat-demo.md` with:
 
 - local setup, migration, reset, and run instructions;
 - fictional demo credentials and a non-production warning;
@@ -415,7 +415,7 @@ If completion needs a product decision outside the supplied specifications, stop
 ### Copy-ready Stage 2 `/goal` request
 
 ```text
-/goal Implement Stage 2 of _PROJECT/tasks/CFIF-003/implementation_plan.md: complete the branded Data Insights Chat experience and demonstration on top of the Stage 1 persistence, DTO, simulation, and API foundation. Read _PROJECT/tasks/CFIF-003/task_request.md, the full Stage 2 plan and prerequisite gate, the Stage 1 handoff and actual code, all listed input specifications, repository AGENTS.md, relevant installed Next.js 16 guides, reporting documentation, and applicable brand-kit rules before editing. First verify the Stage 1 prerequisites; repair only acceptance-critical gaps and do not replace stable contracts without evidence. Work checkpoint by checkpoint and keep a compact progress record naming the current checkpoint, verified commands, remaining work, and blockers. Finish the report preview/canvas, simulated recorded-input UI, profile/account flows, every required state, responsive/accessibility behavior, DEMO_GUIDE.md, visual evidence, and full regression/acceptance pass. Do not add an LLM, live data, real audio/transcription, external identity, analytics/tracking, arbitrary SQL, or any out-of-scope product feature. Continue until the Stage 2 stopping condition is fully satisfied and then provide an evidence-based final handoff with changed files, exact checks and browser states verified, database checksum result, brand rules applied, adaptations made, and any genuine remaining limitation.
+/goal Implement Stage 2 of _PROJECT/tasks/CFIF-003/implementation_plan.md: complete the branded Data Insights Chat experience and demonstration on top of the Stage 1 persistence, DTO, simulation, and API foundation. Read _PROJECT/tasks/CFIF-003/task_request.md, the full Stage 2 plan and prerequisite gate, the Stage 1 handoff and actual code, all listed input specifications, repository AGENTS.md, relevant installed Next.js 16 guides, reporting documentation, and applicable brand-kit rules before editing. First verify the Stage 1 prerequisites; repair only acceptance-critical gaps and do not replace stable contracts without evidence. Work checkpoint by checkpoint and keep a compact progress record naming the current checkpoint, verified commands, remaining work, and blockers. Finish the report preview/canvas, simulated recorded-input UI, profile/account flows, every required state, responsive/accessibility behavior, docs/data-insights-chat-demo.md, visual evidence, and full regression/acceptance pass. Do not add an LLM, live data, real audio/transcription, external identity, analytics/tracking, arbitrary SQL, or any out-of-scope product feature. Continue until the Stage 2 stopping condition is fully satisfied and then provide an evidence-based handoff with changed files, exact checks and browser states verified, database checksum result, brand rules applied, adaptations made, and any genuine remaining limitation.
 ```
 
 ## Planned file-area ownership
@@ -434,7 +434,7 @@ Exact filenames may adapt to the implementation, but responsibilities must stay 
 | `app/app/` | Shell, empty workspace, typed conversation | Report, profile, responsive and full state completion |
 | `components/data-insights/` | Core reusable shell/chat/Markdown primitives | Canvas, voice, drawers, menus, focus and state refinements |
 | `public/brand/` | Intact supplied logo | No identity reconstruction |
-| `_PROJECT/tasks/CFIF-003/DEMO_GUIDE.md` | Deferred | Create and verify |
+| `docs/data-insights-chat-demo.md` | Deferred | Create and verify |
 | `_PROJECT/tasks/CFIF-003/evidence/` | Optional diagnostic captures only | Required representative final evidence |
 
 ## Acceptance traceability by stage
@@ -453,7 +453,7 @@ Exact filenames may adapt to the implementation, but responsibilities must stay 
 | Safe Markdown | Parser/render tests in core chat | Complete visible unsafe-content/failure checks |
 | Brand and layout | Foundational tokens, logo, shell | Full screen/render comparison and responsive evidence |
 | Accessibility | Core semantics/focus/input behavior | Full keyboard, drawer, canvas, live-region, and reduced-motion pass |
-| Demonstration readiness | Not claimed | `DEMO_GUIDE.md` plus final evidence |
+| Demonstration readiness | Not claimed | `docs/data-insights-chat-demo.md` plus final evidence |
 
 ## Brand application record for implementation
 

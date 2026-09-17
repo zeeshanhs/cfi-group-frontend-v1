@@ -1,6 +1,6 @@
 # Data Insights Chat — Demonstration Guide
 
-This guide runs a local, fictional prototype. It is not connected to a CFI identity service, live business data, a warehouse, an AI/LLM service, a microphone, or a transcription provider. The interface labels the experience **Synthetic demo · Fictional data · Reporting timezone: UTC**. Do not present its people, properties, counts, or reports as real CFI records.
+This is the canonical repository guide for demonstrating the local, fictional Data Insights Chat prototype. It is not connected to a CFI identity service, live business data, a warehouse, an AI/LLM service, a microphone, or a transcription provider. The interface labels the experience **Synthetic demo · Fictional data · Reporting timezone: UTC**. Do not present its people, properties, counts, or reports as real CFI records.
 
 ## 1. Local setup and clean reset
 
@@ -40,16 +40,27 @@ These credentials are local, fictional, and non-production.
 
 Use Jordan for the primary walkthrough. Riley exists to demonstrate account isolation and missing optional profile values.
 
+### Application routes
+
+| Destination | Route | Purpose |
+| --- | --- | --- |
+| Feature hub | `/app` | Post-login starting point for choosing an available tool. |
+| New Data Insights chat | `/app/chat` | Unpersisted blank chat workspace. |
+| Saved conversation | `/app/chats/[chatId]` | Persistent conversation and optional report canvas. |
+| Reports | `/reports` | Available repository-backed reports. |
+| Profile | `/app/profile` | Read-only fictional account details. |
+
 ## 3. Primary report journey
 
-1. Sign in as Jordan Ellis.
-2. Choose **New chat**.
-3. Send exactly: **Show the report of bids created in the past seven days.**
-4. Observe one pending state, followed by a Markdown answer stating **64 bids** for **9–15 September 2026** and a report attachment with **64 rows · 10 columns**.
-5. In the compact preview, verify the first three Bid IDs are `000064`, `000063`, and `000062`.
-6. Choose **Open report**. Confirm the title **Bids created: 9–15 September 2026**, the UTC/date/filter context, all ten reachable columns, and **Rows 1–50 of 64 · Page 1 of 2**.
-7. Choose **Next page**. Confirm **Rows 51–64 of 64 · Page 2 of 2** and 14 rows.
-8. Expand **Report details** and verify:
+1. Sign in as Jordan Ellis. Confirm the **Choose a feature** screen opens rather than entering a feature automatically.
+2. Choose **Open Data Insights Chat**. The blank chat workspace is available at `/app/chat`; **All features** returns to the feature screen.
+3. Choose **New chat**.
+4. Send exactly: **Show the report of bids created in the past seven days.**
+5. Observe one pending state, followed by a Markdown answer stating **64 bids** for **9–15 September 2026** and a report attachment with **64 rows · 10 columns**.
+6. In the compact preview, verify the first three Bid IDs are `000064`, `000063`, and `000062`.
+7. Choose **Open report**. Confirm the title **Bids created: 9–15 September 2026**, the UTC/date/filter context, all ten reachable columns, and **Rows 1–50 of 64 · Page 1 of 2**.
+8. Choose **Next page**. Confirm **Rows 51–64 of 64 · Page 2 of 2** and 14 rows.
+9. Expand **Report details** and verify:
    - Data mode: Synthetic fixtures — not live business data
    - Reporting timezone: UTC
    - Date basis: Bid creation timestamp
@@ -57,8 +68,8 @@ Use Jordan for the primary walkthrough. Riley exists to demonstrate account isol
    - Period end (exclusive): 2026-09-16 00:00:00 UTC
    - Snapshot rows / Total matching rows: 64 / 64
    - Ordering: Created at descending; Bid ID descending
-9. Choose **Close report** (or **Back to conversation** at narrower widths). Confirm the conversation and draft remain in place and focus returns to the report-opening action.
-10. Reopen the report: it resumes the remembered page during this browser session. Refresh the page, then log out and sign in again. Reopen the saved chat and report; it is the same persisted 64-row snapshot. A fresh login may begin at page 1 unless the authorized report URL still specifies another valid page.
+10. Choose **Close report** (or **Back to conversation** at narrower widths). Confirm the conversation and draft remain in place and focus returns to the report-opening action.
+11. Reopen the report: it resumes the remembered page during this browser session. Refresh the page, then log out and sign in again. Reopen the saved chat and report; it is the same persisted 64-row snapshot. A fresh login may begin at page 1 unless the authorized report URL still specifies another valid page.
 
 Important display checks: Bid IDs retain leading zeros; `—` means no value was supplied and is not zero; `0.00` remains zero; amounts retain supplied precision; currency remains a separate `USD`/`CAD` code; timestamps are displayed in UTC. The table itself scrolls horizontally—columns are not compressed or replaced with cards.
 

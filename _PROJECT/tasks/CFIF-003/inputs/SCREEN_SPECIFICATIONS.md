@@ -169,7 +169,8 @@ Neutral separators are not control boundaries. Preserve the stronger control bor
 | Destination | Proposed route | Ownership / history behavior |
 | --- | --- | --- |
 | SCR-01 | `/login` | No protected content. Safe optional expired/signed-out notice. |
-| SCR-02 | `/app` | Authenticated, unsaved blank conversation. New chat does not create a stored row until first submission. |
+| Feature hub | `/app` | Authenticated entry point for selecting Data Insights Chat or Reports. |
+| SCR-02 | `/app/chat` | Authenticated, unsaved blank conversation. New chat does not create a stored row until first submission. |
 | SCR-03 | `/app/chats/{chatId}` | Server verifies current user's ownership and relevant access. IDs in the browser are not authorization. |
 | SCR-04 | `/app/chats/{chatId}?report={artifactId}&page=1` | The selected artifact must belong to this chat/answer and current authorized scope. |
 | SCR-05 | `/app/profile` | Current user's read-only profile. Previous chat, report, page and scroll state remain in session-memory return context. |
@@ -625,7 +626,7 @@ Provide a usable starting point for a first or independent conversation without 
 
 ### 7.2 Entry, exit and hierarchy
 
-Entry: successful login, New chat, or an authorized `/app` visit. Initial login defaults to a blank workspace rather than implicitly selecting someone else's or the last user's conversation.
+Entry: choosing Data Insights Chat from the authenticated feature hub, New chat, or an authorized `/app/chat` visit. Initial feature entry defaults to a blank workspace rather than implicitly selecting someone else's or the last user's conversation.
 
 Exit: first accepted submission creates the owned chat and transitions to SCR-03 using the same submitted user turn; selecting a saved chat opens SCR-03; account Profile opens SCR-05; Log out opens SCR-01. Recording/transcribing remains a state of this unsent context until a question is explicitly sent. Opening an old chat never attaches this context's audio to it.
 

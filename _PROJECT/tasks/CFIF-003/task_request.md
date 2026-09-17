@@ -69,7 +69,8 @@ Implement the five specified destinations. Equivalent route organization is acce
 | Screen | Preferred route | Required purpose |
 | --- | --- | --- |
 | SCR-01 Login | `/login` | Simulated provisioned-account sign-in, validation, pending, rejected, service-failed, expired, and signed-out states. |
-| SCR-02 Empty workspace | `/app` | New independent chat, history sidebar, suggestions, composer, and first-send flow without persisting blank chats. |
+| Feature hub | `/app` | Authenticated entry point that makes Data Insights Chat and Reports discoverable. |
+| SCR-02 Empty workspace | `/app/chat` | New independent chat, history sidebar, suggestions, composer, and first-send flow without persisting blank chats. |
 | SCR-03 Active conversation | `/app/chats/[chatId]` | Ordered persistent messages, request states, rendered Markdown, simulated voice flow, and report previews. |
 | SCR-04 Report canvas | `/app/chats/[chatId]?report=[artifactId]&page=[page]` | Authorized, paginated, read-only snapshot alongside the conversation on wide screens and replacing it on narrow screens. |
 | SCR-05 Basic profile | `/app/profile` | Read-only current-user profile, initials fallback, missing-value handling, and return to the prior workspace state. |
@@ -269,7 +270,7 @@ Keep fixture source data separate from persisted artifact snapshots. A new repor
 
 ## Required demo walkthrough
 
-Create `_PROJECT/tasks/CFIF-003/DEMO_GUIDE.md` during implementation. It must include the local demo account, setup/reset instructions, the visible synthetic-data limitation, and the exact prompt sequence below. The guide must not require the demonstrator to guess alternate wording.
+Create `docs/data-insights-chat-demo.md` during implementation. It must include the local demo account, setup/reset instructions, the visible synthetic-data limitation, and the exact prompt sequence below. The guide must not require the demonstrator to guess alternate wording.
 
 ### Primary report journey
 
@@ -365,7 +366,7 @@ Equivalent organization is acceptable if boundaries stay clear.
 | Area | Suggested responsibility |
 | --- | --- |
 | `app/login/` | Login screen and route-local UI. |
-| `app/app/` | Authenticated shell, empty workspace, conversation, report canvas, and profile routes. |
+| `app/app/` | Authenticated feature hub, chat shell, empty workspace, conversation, report canvas, and profile routes. |
 | `app/api/auth/`, `app/api/me/` | Simulated auth/session Route Handlers. |
 | `app/api/chats/`, `app/api/requests/` | Chat and request lifecycle handlers. |
 | `app/api/artifacts/` | Artifact metadata and row-page handlers. |
@@ -375,7 +376,7 @@ Equivalent organization is acceptable if boundaries stay clear.
 | `lib/data-insights/server/` | SQLite repositories, transactions, auth/session helpers, migrations, and ownership checks. Server-only. |
 | `lib/data-insights/simulation/` | Deterministic prompt resolver, fixed clock, fixture data, and failure plans. Server-only. |
 | `public/brand/` | Intact supplied logo used by the application. |
-| `_PROJECT/tasks/CFIF-003/DEMO_GUIDE.md` | Exact demonstrator setup, credentials, script, expected results, reset, and limitations. |
+| `docs/data-insights-chat-demo.md` | Canonical demonstrator setup, credentials, script, expected results, reset, and limitations. |
 
 Keep pages/layouts focused on composition. Server Components may provide the static shell and protected-route redirect, but browser-visible chat/profile/request/transcription/artifact data must still be obtained through the validated API contracts. Use narrow Client Components for API loading, the composer, polling, menus, drawers, report interaction, and focus restoration. Do not expose SQLite or fixture modules to the client bundle.
 
@@ -468,7 +469,7 @@ The task is complete when all of the following are true:
 - UI expression uses the intact supplied logo, canonical theme tokens, restrained red/neutral CFI working style, literal actions, visible focus, adequate targets, semantic structure, and no unauthorized imagery or identity reconstruction.
 - The existing reporting tables and their meanings remain intact, and a reporting database refresh cannot erase chat data.
 - Database migrations and seeding are idempotent; tests do not mutate the checked-in database.
-- `_PROJECT/tasks/CFIF-003/DEMO_GUIDE.md` documents credentials, setup/reset, exact messages, expected outcomes, and simulation limitations.
+- `docs/data-insights-chat-demo.md` documents credentials, setup/reset, exact messages, expected outcomes, and simulation limitations.
 - Automated checks pass, and the required desktop/mobile/keyboard/manual states are actually inspected and accurately recorded.
 
 ## Implementation references

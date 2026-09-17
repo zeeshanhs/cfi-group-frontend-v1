@@ -1,5 +1,7 @@
 # CFIF-003 Stage 2 browser evidence
 
+The reusable demonstration instructions are maintained in [`docs/data-insights-chat-demo.md`](../../../docs/data-insights-chat-demo.md); this directory contains task-specific implementation evidence only.
+
 Captured on 17 September 2026 with the Codex in-app browser using Chromium `152.0.0.0` on macOS. The application ran locally against the disposable database `/tmp/cfi-data-insights-stage2.sqlite`; no checked-in database was used for browser writes.
 
 ## Captures

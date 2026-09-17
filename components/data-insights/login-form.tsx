@@ -73,8 +73,8 @@ export function LoginForm() {
 
   return (
     <section className={styles.loginContent} aria-labelledby="login-title">
-      <h1 id="login-title">Sign in to Data Insights Chat</h1>
-      <p>Use your provisioned account to access your private chats.</p>
+      <h1 id="login-title">Sign in to the CFI workspace</h1>
+      <p>Use your provisioned account to access available internal tools.</p>
       <form className={styles.loginForm} onSubmit={submit} noValidate>
         {error ? (
           <p className={styles.formError} role="alert">

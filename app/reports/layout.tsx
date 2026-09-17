@@ -8,10 +8,13 @@ export default function ReportsLayout({
   return (
     <div className={styles.shell}>
       <header className={styles.header}>
-        <Link className={styles.brand} href="/reports">
+        <Link className={styles.brand} href="/app">
           CFI Group
         </Link>
-        <span className={styles.sectionLabel}>Internal reports</span>
+        <nav className={styles.headerNav} aria-label="Report navigation">
+          <Link href="/app">All features</Link>
+          <span className={styles.sectionLabel}>Internal reports</span>
+        </nav>
       </header>
       <main className={styles.main}>{children}</main>
     </div>

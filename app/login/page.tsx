@@ -10,7 +10,7 @@ import {
   userForSession,
 } from "@/lib/data-insights/server/auth";
 
-export const metadata: Metadata = { title: "Sign in to Data Insights Chat" };
+export const metadata: Metadata = { title: "Sign in to the internal workspace" };
 export const dynamic = "force-dynamic";
 
 export default async function LoginPage() {

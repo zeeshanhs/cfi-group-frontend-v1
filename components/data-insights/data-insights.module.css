@@ -27,6 +27,12 @@
   flex: none;
 }
 
+.brandHome {
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+}
+
 .loginModeStrip,
 .modeStrip {
   min-height: 32px;
@@ -178,7 +184,7 @@
 
 .accountArea {
   position: relative;
-  margin-left: auto;
+  margin-left: 0;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -235,6 +241,20 @@
   color: var(--ce-color-on-inverse);
   padding: 8px 12px;
   cursor: pointer;
+}
+
+.headerButton {
+  display: inline-flex;
+  align-items: center;
+  margin-left: auto;
+  text-decoration: none;
+}
+
+.appHeader .brandHome:focus-visible,
+.appHeader .headerButton:focus-visible,
+.appHeader .initials:focus-visible,
+.appHeader .openChats:focus-visible {
+  outline-color: var(--ce-color-focus-inverse);
 }
 
 .openChats {

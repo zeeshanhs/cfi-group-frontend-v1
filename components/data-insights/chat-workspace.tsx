@@ -523,8 +523,9 @@ export function ChatWorkspace({
   }
 
   function backFromProfile() {
-    const stored = sessionStorage.getItem("cfi-data-insights-return") ?? "/app";
-    const safe = stored.startsWith("/app") && !stored.startsWith("//") ? stored : "/app";
+    const fallback = searchParams.get("from") === "workspace" ? "/app" : "/app/chat";
+    const stored = sessionStorage.getItem("cfi-data-insights-return") ?? fallback;
+    const safe = stored.startsWith("/app") && !stored.startsWith("//") ? stored : fallback;
     sessionStorage.removeItem("cfi-data-insights-return");
     router.push(safe);
   }
@@ -614,8 +615,9 @@ export function ChatWorkspace({
     <div className={styles.appShell}>
       <header className={styles.appHeader}>
         <button ref={openChatsRef} className={styles.openChats} type="button" onClick={() => setDrawerOpen(true)} aria-expanded={drawerOpen}>Chats</button>
-        <BrandMark />
+        <Link className={styles.brandHome} href="/app" aria-label="CFI internal workspace" onClick={(event) => { event.preventDefault(); navigate("/app"); }}><BrandMark /></Link>
         <span className={styles.productName}>Data Insights Chat</span>
+        <Link className={styles.headerButton} href="/app" onClick={(event) => { event.preventDefault(); navigate("/app"); }}>All features</Link>
         <div className={styles.accountArea}>
           <span className={styles.accountName}>{user?.displayName ?? "Account"}</span>
           <button ref={accountRef} className={styles.initials} type="button" aria-label="Account actions" aria-expanded={accountOpen} onClick={() => setAccountOpen((value) => !value)}>{user?.initials ?? "—"}</button>
@@ -627,7 +629,7 @@ export function ChatWorkspace({
         {drawerOpen ? <button className={styles.drawerBackdrop} type="button" aria-label="Close chats" onClick={closeDrawer} /> : null}
         <aside ref={drawerRef} className={`${styles.sidebar} ${drawerOpen ? styles.sidebarOpen : ""}`} aria-label="Chat history">
           <div className={styles.drawerHeading}><strong>Chats</strong><button type="button" onClick={closeDrawer}>Close</button></div>
-          <Link className={styles.newChatButton} href="/app" onClick={(event) => { event.preventDefault(); navigate("/app"); }}>New chat</Link>
+          <Link className={styles.newChatButton} href="/app/chat" onClick={(event) => { event.preventDefault(); navigate("/app/chat"); }}>New chat</Link>
           <h2>Recent chats</h2>
           {chats.length ? <nav className={styles.chatList}>{chats.map((chat) => <Link aria-current={chat.id === chatId ? "page" : undefined} className={chat.id === chatId ? styles.activeChat : ""} href={`/app/chats/${chat.id}`} key={chat.id} onClick={(event) => { event.preventDefault(); navigate(`/app/chats/${chat.id}`); }}>{chat.title}</Link>)}</nav> : <p className={styles.emptyHistory}>No saved chats yet.</p>}
         </aside>
