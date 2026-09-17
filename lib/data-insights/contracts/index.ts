@@ -197,6 +197,31 @@ export type TranscriptionResponseDto =
       retryable: boolean;
     };
 
+export type PromptAvailability = "supported" | "preview" | "unavailable";
+
+export type PromptCategoryDto = {
+  id: string;
+  label: string;
+  sortOrder: number;
+};
+
+export type PromptSummaryDto = {
+  id: string;
+  title: string;
+  promptText: string;
+  description: string;
+  category: string;
+  tags: string[];
+  availability: "supported";
+  sortOrder: number;
+};
+
+export type PromptCatalogDto = {
+  revision: string;
+  categories: PromptCategoryDto[];
+  prompts: PromptSummaryDto[];
+};
+
 export class ContractValidationError extends Error {
   constructor(public readonly code: string, message: string) {
     super(message);
@@ -329,6 +354,131 @@ export function parseTranscriptionRequest(
     );
   }
   return { mode: "simulated", clientTranscriptionId, scenario };
+}
+
+function promptRecord(value: unknown, label: string): Record<string, unknown> {
+  if (typeof value !== "object" || value === null || Array.isArray(value)) {
+    throw new ContractValidationError(
+      "invalid_prompt_catalog",
+      `The ${label} is invalid.`,
+    );
+  }
+  return value as Record<string, unknown>;
+}
+
+function promptText(value: unknown, label: string, maximum: number): string {
+  if (
+    typeof value !== "string" ||
+    value.trim().length === 0 ||
+    [...value].length > maximum
+  ) {
+    throw new ContractValidationError(
+      "invalid_prompt_catalog",
+      `The ${label} is invalid.`,
+    );
+  }
+  return value;
+}
+
+function promptSortOrder(value: unknown, label: string): number {
+  if (!Number.isSafeInteger(value) || (value as number) < 0) {
+    throw new ContractValidationError(
+      "invalid_prompt_catalog",
+      `The ${label} is invalid.`,
+    );
+  }
+  return value as number;
+}
+
+export function parsePromptCatalogDto(value: unknown): PromptCatalogDto {
+  const input = promptRecord(value, "prompt catalog");
+  const revision = promptText(input.revision, "catalog revision", 80);
+  if (!Array.isArray(input.categories) || !Array.isArray(input.prompts)) {
+    throw new ContractValidationError(
+      "invalid_prompt_catalog",
+      "The prompt catalog lists are invalid.",
+    );
+  }
+
+  const categoryIds = new Set<string>();
+  const categories = input.categories.map((categoryValue) => {
+    const category = promptRecord(categoryValue, "prompt category");
+    const id = parseOpaqueId(category.id, "prompt category identifier");
+    if (categoryIds.has(id)) {
+      throw new ContractValidationError(
+        "invalid_prompt_catalog",
+        "Prompt category identifiers must be unique.",
+      );
+    }
+    categoryIds.add(id);
+    return {
+      id,
+      label: promptText(category.label, "prompt category label", 60),
+      sortOrder: promptSortOrder(
+        category.sortOrder,
+        "prompt category order",
+      ),
+    };
+  });
+
+  const promptIds = new Set<string>();
+  const usedCategoryIds = new Set<string>();
+  const prompts = input.prompts.map((promptValue) => {
+    const prompt = promptRecord(promptValue, "prompt record");
+    const id = parseOpaqueId(prompt.id, "prompt identifier");
+    if (promptIds.has(id)) {
+      throw new ContractValidationError(
+        "invalid_prompt_catalog",
+        "Prompt identifiers must be unique.",
+      );
+    }
+    promptIds.add(id);
+    const category = parseOpaqueId(
+      prompt.category,
+      "prompt category identifier",
+    );
+    if (!categoryIds.has(category)) {
+      throw new ContractValidationError(
+        "invalid_prompt_catalog",
+        "Every prompt must use a published category.",
+      );
+    }
+    if (prompt.availability !== "supported") {
+      throw new ContractValidationError(
+        "invalid_prompt_catalog",
+        "Only supported prompts may be published.",
+      );
+    }
+    if (!Array.isArray(prompt.tags)) {
+      throw new ContractValidationError(
+        "invalid_prompt_catalog",
+        "Prompt tags must be a list.",
+      );
+    }
+    const tags = prompt.tags.map((tag) =>
+      promptText(tag, "prompt tag", 40),
+    );
+    usedCategoryIds.add(category);
+    return {
+      id,
+      title: promptText(prompt.title, "prompt title", 100),
+      promptText: promptText(prompt.promptText, "inserted prompt text", 4_000),
+      description: promptText(prompt.description, "prompt description", 240),
+      category,
+      tags,
+      availability: "supported" as const,
+      sortOrder: promptSortOrder(prompt.sortOrder, "prompt order"),
+    };
+  });
+
+  if (categories.some((category) => !usedCategoryIds.has(category.id))) {
+    throw new ContractValidationError(
+      "invalid_prompt_catalog",
+      "Every published prompt category must contain a supported prompt.",
+    );
+  }
+
+  return { revision, categories, prompts };
 }
 
 function parsePositiveInteger(

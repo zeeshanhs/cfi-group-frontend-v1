@@ -1,0 +1,123 @@
+{
+  "api": {
+    "status": 200,
+    "cacheControl": "no-store",
+    "revision": "2026-09-17.1",
+    "categories": [
+      "Bids",
+      "People",
+      "Weekly reports"
+    ],
+    "promptIds": [
+      "bids-created-last-month",
+      "casey-created-seven-days",
+      "weekly-created-bids-report",
+      "casey-morgan-created-seven-days",
+      "alex-morgan-created-seven-days",
+      "empty-june-created-bids-report"
+    ],
+    "supportedOnly": true
+  },
+  "starters": {
+    "count": 5
+  },
+  "desktopPopover": {
+    "presentation": "popover",
+    "ariaModal": null,
+    "searchFocused": true,
+    "width": 680,
+    "insideViewport": true,
+    "obscuresTextarea": false,
+    "obscuresSend": false
+  },
+  "search": {
+    "query": "Casey",
+    "results": [
+      "Casey Patel’s bid activity",
+      "Compare Casey Patel and Morgan Reed"
+    ]
+  },
+  "categoryAndSearch": {
+    "selected": "People",
+    "resultCount": 2
+  },
+  "fillOnlySelection": {
+    "draft": "How many bids did Casey Patel create in the past seven days?",
+    "textareaFocused": true,
+    "path": "/app/chat",
+    "messageCount": 0
+  },
+  "replacementCancel": {
+    "draft": "Keep this unsent draft",
+    "browserStillOpen": true,
+    "query": "Casey",
+    "resultFocused": true
+  },
+  "replacementConfirm": {
+    "draft": "How many bids did Casey Patel create in the past seven days?",
+    "textareaFocused": true,
+    "path": "/app/chat"
+  },
+  "desktopOutsideClick": {
+    "closed": true,
+    "openerFocused": true
+  },
+  "errorState": {
+    "freeformEnabled": true,
+    "retryVisible": true
+  },
+  "errorRecovery": 6,
+  "mobileSheet": {
+    "presentation": "sheet",
+    "ariaModal": "true",
+    "searchFocused": true,
+    "height": 717.390625,
+    "maximumHeight": 717.4,
+    "anchoredToBottom": true,
+    "bodyOverflowX": false
+  },
+  "mobileFocusTrap": {
+    "focusableCount": 12,
+    "wrapsLastToFirst": true,
+    "wrapsFirstToLast": true
+  },
+  "mobileEscape": {
+    "closed": true,
+    "openerFocused": true
+  },
+  "mobileReplacementEscape": {
+    "browserStillOpen": true,
+    "draftUnchanged": true,
+    "resultFocused": true
+  },
+  "keyboardRepresentative": {
+    "viewportHeight": 560,
+    "searchVisible": true,
+    "firstResultVisible": true
+  },
+  "clearFilters": {
+    "query": "",
+    "selected": "All",
+    "resultCount": 6
+  },
+  "tabletPopover": {
+    "presentation": "popover",
+    "insideViewport": true,
+    "searchFocused": true,
+    "firstResultReachable": true,
+    "bodyOverflowX": false
+  },
+  "narrowZoomRepresentative": {
+    "width": 320,
+    "noBodyOverflowX": true,
+    "searchVisible": true,
+    "firstResultVisible": true
+  },
+  "ongoingPopover": {
+    "aboveComposer": true,
+    "insideConversation": true,
+    "searchFocused": true
+  },
+  "browser": "Chrome/153.0.8010.36",
+  "checkedAt": "2026-09-17T16:58:11.845Z"
+}

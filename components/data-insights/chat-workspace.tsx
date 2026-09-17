@@ -20,22 +20,20 @@ import type {
   CreateMessageResponseDto,
   InputMode,
   MessageDto,
+  PromptCatalogDto,
+  PromptSummaryDto,
   RequestStatusDto,
   TranscriptionResponseDto,
   UserProfileDto,
 } from "@/lib/data-insights/contracts";
+import { parsePromptCatalogDto } from "@/lib/data-insights/contracts";
 import { getElasticTextareaSize } from "@/lib/data-insights/elastic-textarea";
 
 import styles from "./data-insights.module.css";
 import { BrandMark } from "./brand-mark";
+import { PromptBrowser } from "./prompt-browser";
 import { ReportAttachment, ReportView } from "./report-view";
 import { SafeMarkdown } from "./safe-markdown";
-
-const suggestions = [
-  "How many bids were created last month?",
-  "How many bids did Casey Patel create in the past seven days?",
-  "Show the report of bids created in the past seven days.",
-];
 
 type CaptureState = "idle" | "recording" | "transcribing" | "review";
 type ComposerPlacement = "centered" | "floating" | "constrained";
@@ -45,6 +43,7 @@ type Confirmation = {
   confirmLabel: string;
   cancelLabel: string;
   confirm: () => void;
+  cancel?: () => void;
 };
 
 function draftKey(chatId: string | null) {
@@ -100,6 +99,17 @@ function SendIcon() {
   return (
     <svg aria-hidden="true" viewBox="0 0 24 24">
       <path d="M5 12h13M13 7l5 5-5 5" />
+    </svg>
+  );
+}
+
+function PromptLibraryIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24">
+      <rect x="4" y="4" width="6" height="6" />
+      <rect x="14" y="4" width="6" height="6" />
+      <rect x="4" y="14" width="6" height="6" />
+      <rect x="14" y="14" width="6" height="6" />
     </svg>
   );
 }
@@ -277,6 +287,16 @@ function ChatComposer({
   onCancelCapture,
   onDiscardTranscript,
   onHeightChange,
+  promptCatalog,
+  promptsLoading,
+  promptError,
+  promptBrowserOpen,
+  promptBrowserSuspended,
+  promptOpener,
+  onOpenPrompts,
+  onClosePrompts,
+  onRetryPrompts,
+  onSelectPrompt,
 }: {
   placement: ComposerPlacement;
   draft: string;
@@ -298,6 +318,19 @@ function ChatComposer({
   onCancelCapture: () => void;
   onDiscardTranscript: () => void;
   onHeightChange?: (height: number) => void;
+  promptCatalog: PromptCatalogDto | null;
+  promptsLoading: boolean;
+  promptError: string | null;
+  promptBrowserOpen: boolean;
+  promptBrowserSuspended: boolean;
+  promptOpener: HTMLElement | null;
+  onOpenPrompts: (source: HTMLButtonElement) => void;
+  onClosePrompts: () => void;
+  onRetryPrompts: () => void;
+  onSelectPrompt: (
+    prompt: PromptSummaryDto,
+    source: HTMLButtonElement,
+  ) => void;
 }) {
   const formRef = useRef<HTMLFormElement>(null);
   const placementClass = {
@@ -383,6 +416,24 @@ function ChatComposer({
     >
       {placement !== "centered" ? <span className={styles.composerFade} aria-hidden="true" /> : null}
       <div className={styles.composerPill} aria-busy={capture === "transcribing" || sending || active}>
+        {capture === "idle" || capture === "review" ? (
+          <button
+            className={styles.promptLibraryButton}
+            type="button"
+            aria-label={
+              placement === "centered" ? undefined : "Browse prompts"
+            }
+            aria-haspopup="dialog"
+            aria-expanded={promptBrowserOpen}
+            data-tooltip={
+              placement === "centered" ? undefined : "Browse prompts"
+            }
+            onClick={(event) => onOpenPrompts(event.currentTarget)}
+          >
+            <PromptLibraryIcon />
+            {placement === "centered" ? <span>Browse prompts</span> : null}
+          </button>
+        ) : null}
         <div className={styles.composerInput}>
           <label htmlFor="chat-question">Your question</label>
           <textarea
@@ -467,6 +518,18 @@ function ChatComposer({
         {status}
       </p>
       <span className={styles.srOnly} id="composer-hint">Enter sends. Shift plus Enter adds a line.</span>
+      <PromptBrowser
+        open={promptBrowserOpen}
+        placement={placement}
+        catalog={promptCatalog}
+        loading={promptsLoading}
+        error={promptError}
+        opener={promptOpener}
+        suspended={promptBrowserSuspended}
+        onClose={onClosePrompts}
+        onRetry={onRetryPrompts}
+        onSelect={onSelectPrompt}
+      />
     </form>
   );
 }
@@ -517,6 +580,15 @@ export function ChatWorkspace({
   const [transcriptDraft, setTranscriptDraft] = useState("");
   const [confirmation, setConfirmation] = useState<Confirmation | null>(null);
   const [newAnswer, setNewAnswer] = useState(false);
+  const [promptCatalog, setPromptCatalog] = useState<PromptCatalogDto | null>(
+    null,
+  );
+  const [promptsLoading, setPromptsLoading] = useState(true);
+  const [promptError, setPromptError] = useState<string | null>(null);
+  const [promptBrowserOpen, setPromptBrowserOpen] = useState(false);
+  const [promptOpener, setPromptOpener] = useState<HTMLButtonElement | null>(
+    null,
+  );
 
   const updateComposerOverlayHeight = useCallback((height: number) => {
     const scroller = messageScrollerRef.current;
@@ -568,6 +640,29 @@ export function ChatWorkspace({
     );
   }, [chatId, expireSession, view]);
 
+  const loadPromptCatalog = useCallback(async () => {
+    setPromptsLoading(true);
+    setPromptError(null);
+    try {
+      const response = await fetch("/api/prompts", { cache: "no-store" });
+      if (response.status === 401) {
+        expireSession();
+        return;
+      }
+      const payload = await responseJson<unknown>(response);
+      setPromptCatalog(parsePromptCatalogDto(payload));
+    } catch (caught) {
+      setPromptCatalog(null);
+      setPromptError(
+        caught instanceof Error
+          ? caught.message
+          : "The prompt catalog is unavailable.",
+      );
+    } finally {
+      setPromptsLoading(false);
+    }
+  }, [expireSession]);
+
   useEffect(() => {
     let mounted = true;
     void (async () => {
@@ -590,6 +685,12 @@ export function ChatWorkspace({
   }, [expireSession, loadAttempt, loadChats, loadDetail]);
 
   useEffect(() => {
+    if (view !== "chat") return;
+    const frame = requestAnimationFrame(() => void loadPromptCatalog());
+    return () => cancelAnimationFrame(frame);
+  }, [loadPromptCatalog, view]);
+
+  useEffect(() => {
     if (view === "profile") return;
     draftReady.current = false;
     const frame = requestAnimationFrame(() => {
@@ -607,7 +708,7 @@ export function ChatWorkspace({
   const closeDrawer = useCallback(() => {
     setDrawerOpen(false);
     requestAnimationFrame(() => openChatsRef.current?.focus());
-  }, []);
+  }, [setDrawerOpen]);
   useFocusTrap(drawerOpen, drawerRef, closeDrawer);
 
   useEffect(() => {
@@ -737,6 +838,51 @@ export function ChatWorkspace({
     if (draft !== transcriptDraft) {
       setConfirmation({ title: "Discard the reviewed transcript?", body: "This restores the question text from before the transcript was added. Changes made during transcript review will be discarded.", confirmLabel: "Discard transcript", cancelLabel: "Keep editing", confirm: apply });
     } else apply();
+  }
+
+  const closePromptBrowser = useCallback(() => {
+    setPromptBrowserOpen(false);
+    requestAnimationFrame(() => promptOpener?.focus());
+  }, [promptOpener]);
+
+  function openPromptBrowser(source: HTMLButtonElement) {
+    setPromptOpener(source);
+    setPromptBrowserOpen(true);
+  }
+
+  function applyPrompt(prompt: PromptSummaryDto) {
+    setDraft(prompt.promptText);
+    setError(null);
+    setConfirmation(null);
+    setPromptBrowserOpen(false);
+    requestAnimationFrame(() => {
+      const textarea = textareaRef.current;
+      textarea?.focus();
+      textarea?.setSelectionRange(prompt.promptText.length, prompt.promptText.length);
+    });
+  }
+
+  function selectPrompt(prompt: PromptSummaryDto, source: HTMLButtonElement) {
+    if (draft.length > 0 && draft !== prompt.promptText) {
+      setConfirmation({
+        title: "Replace your current question?",
+        body: "Choosing this prompt will replace your current draft. Nothing will be sent until you choose Send.",
+        confirmLabel: "Replace draft",
+        cancelLabel: "Keep draft",
+        confirm: () => applyPrompt(prompt),
+        cancel: () => {
+          setConfirmation(null);
+          requestAnimationFrame(() => source.focus());
+        },
+      });
+      return;
+    }
+    applyPrompt(prompt);
+  }
+
+  function cancelConfirmation() {
+    if (confirmation?.cancel) confirmation.cancel();
+    else setConfirmation(null);
   }
 
   async function submit(event?: FormEvent) {
@@ -876,6 +1022,16 @@ export function ChatWorkspace({
       onCancelCapture={cancelCapture}
       onDiscardTranscript={discardTranscript}
       onHeightChange={onHeightChange}
+      promptCatalog={promptCatalog}
+      promptsLoading={promptsLoading}
+      promptError={promptError}
+      promptBrowserOpen={promptBrowserOpen}
+      promptBrowserSuspended={Boolean(confirmation)}
+      promptOpener={promptOpener}
+      onOpenPrompts={openPromptBrowser}
+      onClosePrompts={closePromptBrowser}
+      onRetryPrompts={() => void loadPromptCatalog()}
+      onSelectPrompt={selectPrompt}
     />
   );
 
@@ -900,17 +1056,22 @@ export function ChatWorkspace({
                 {renderComposer("centered")}
                 <div className={styles.suggestions}>
                   <strong>Try a prompt</strong>
-                  {suggestions.map((suggestion) => (
+                  {promptsLoading ? <p>Loading starter prompts…</p> : null}
+                  {!promptsLoading && promptError ? (
+                    <div className={styles.suggestionState}>
+                      <span>Starter prompts are unavailable. You can still type your own question.</span>
+                      <button type="button" onClick={() => void loadPromptCatalog()}>
+                        Try again
+                      </button>
+                    </div>
+                  ) : null}
+                  {promptCatalog?.prompts.slice(0, 5).map((prompt) => (
                     <button
                       type="button"
-                      key={suggestion}
-                      onClick={() => {
-                        setDraft(suggestion);
-                        setError(null);
-                        requestAnimationFrame(() => textareaRef.current?.focus());
-                      }}
+                      key={prompt.id}
+                      onClick={(event) => selectPrompt(prompt, event.currentTarget)}
                     >
-                      {suggestion}
+                      {prompt.promptText}
                     </button>
                   ))}
                 </div>
@@ -966,7 +1127,7 @@ export function ChatWorkspace({
         </aside>
         {main}
       </div>
-      <ConfirmationDialog confirmation={confirmation} onCancel={() => setConfirmation(null)} />
+      <ConfirmationDialog confirmation={confirmation} onCancel={cancelConfirmation} />
     </div>
   );
 }

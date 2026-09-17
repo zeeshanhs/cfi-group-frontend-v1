@@ -7,6 +7,7 @@ import {
   parseCreateMessageRequest,
   parseLoginRequest,
   parseOpaqueId,
+  parsePromptCatalogDto,
   parseTranscriptionRequest,
 } from "./index";
 
@@ -126,5 +127,40 @@ describe("Data Insights contracts", () => {
         rows: [],
       }),
     ).toThrow("schema");
+  });
+
+  it("validates a supported-only prompt catalog at runtime", () => {
+    const valid = {
+      revision: "2026-09-17.1",
+      categories: [{ id: "bids", label: "Bids", sortOrder: 10 }],
+      prompts: [
+        {
+          id: "bids-last-month",
+          title: "Bids last month",
+          promptText: "How many bids were created last month?",
+          description: "Count distinct bids for the previous month.",
+          category: "bids",
+          tags: ["monthly"],
+          availability: "supported",
+          sortOrder: 10,
+        },
+      ],
+    };
+    expect(parsePromptCatalogDto(valid)).toEqual(valid);
+    expect(() =>
+      parsePromptCatalogDto({
+        ...valid,
+        prompts: [{ ...valid.prompts[0], availability: "preview" }],
+      }),
+    ).toThrow("Only supported prompts");
+    expect(() =>
+      parsePromptCatalogDto({
+        ...valid,
+        categories: [
+          ...valid.categories,
+          { id: "jobs", label: "Jobs", sortOrder: 20 },
+        ],
+      }),
+    ).toThrow("must contain a supported prompt");
   });
 });
