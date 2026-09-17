@@ -1,0 +1,140 @@
+{
+  "screenshots": [
+    "new-chat-ready-1440x900.png",
+    "new-chat-ready-390x844.png",
+    "ongoing-six-lines-1440x900.png",
+    "ongoing-processing-1440x900.png",
+    "ongoing-recording-1440x900.png",
+    "ongoing-transcript-review-1440x900.png",
+    "ongoing-over-limit-error-1440x900.png",
+    "ongoing-ready-390x844.png",
+    "ongoing-keyboard-representative-390x560.png"
+  ],
+  "checks": {
+    "newChatDesktop": {
+      "composerCentered": true,
+      "visibleQuestionLabel": "Your question",
+      "disclosure": "Synthetic demo · Fictional bid data · UTC",
+      "suggestionCount": 3,
+      "hasPromptBrowserControl": false,
+      "bodyOverflow": false
+    },
+    "newChatMobile": {
+      "bodyOverflow": false,
+      "scrollX": 0,
+      "scrollY": 0,
+      "composerWidth": 366,
+      "pillRight": 378,
+      "headerTop": 0,
+      "layout": {
+        "shell": {
+          "x": 0,
+          "y": 0,
+          "width": 390,
+          "height": 844,
+          "top": 0,
+          "right": 390,
+          "bottom": 844,
+          "left": 0
+        },
+        "appHeader": {
+          "x": 0,
+          "y": 0,
+          "width": 390,
+          "height": 64,
+          "top": 0,
+          "right": 390,
+          "bottom": 64,
+          "left": 0
+        },
+        "chatsButton": {
+          "x": 16,
+          "y": 10,
+          "width": 67.796875,
+          "height": 44,
+          "top": 10,
+          "right": 83.796875,
+          "bottom": 54,
+          "left": 16
+        },
+        "brand": {
+          "x": 143.90625,
+          "y": 15.96875,
+          "width": 126,
+          "height": 32.046875,
+          "top": 15.96875,
+          "right": 269.90625,
+          "bottom": 48.015625,
+          "left": 143.90625
+        },
+        "workspace": {
+          "x": 0,
+          "y": 64,
+          "width": 390,
+          "height": 780,
+          "top": 64,
+          "right": 390,
+          "bottom": 844,
+          "left": 0
+        },
+        "contextHeader": {
+          "x": 0,
+          "y": 64,
+          "width": 390,
+          "height": 72,
+          "top": 64,
+          "right": 390,
+          "bottom": 136,
+          "left": 0
+        },
+        "scrollerTop": 0
+      },
+      "viewportWidth": 390
+    },
+    "elasticTextarea": {
+      "sixLineMetrics": {
+        "clientHeight": 140,
+        "scrollHeight": 140,
+        "overflowY": "hidden"
+      },
+      "sevenLineMetrics": {
+        "clientHeight": 140,
+        "scrollHeight": 162,
+        "overflowY": "auto"
+      }
+    },
+    "reportOpening": {
+      "routeHasReport": true,
+      "canvasVisible": true,
+      "reportTitle": "Bids created: 9–15 September 2026"
+    },
+    "recordTarget": {
+      "width": 44,
+      "height": 44
+    },
+    "focusTooltip": "1",
+    "ongoingDesktop": {
+      "composerInsideConversation": true,
+      "composerWidth": 760,
+      "conversationWidth": 1192,
+      "formBackground": "rgba(0, 0, 0, 0)",
+      "transcriptBottomPadding": "161px",
+      "lastMessageClearsPill": true,
+      "bodyOverflow": false
+    },
+    "ongoingMobile": {
+      "bodyOverflow": false,
+      "composerWidth": 366,
+      "sendWidth": 44,
+      "sendHeight": 44,
+      "sendTextDisplay": "none"
+    },
+    "keyboardRepresentative": {
+      "textareaVisible": true,
+      "sendVisible": true,
+      "viewportHeight": 560
+    }
+  },
+  "browser": "Chrome/153.0.8010.36",
+  "checkedAt": "2026-09-17T16:14:23.163Z"
+}

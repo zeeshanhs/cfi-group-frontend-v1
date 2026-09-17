@@ -8,6 +8,7 @@ import {
   ReactNode,
   useCallback,
   useEffect,
+  useLayoutEffect,
   useRef,
   useState,
 } from "react";
@@ -23,6 +24,7 @@ import type {
   TranscriptionResponseDto,
   UserProfileDto,
 } from "@/lib/data-insights/contracts";
+import { getElasticTextareaSize } from "@/lib/data-insights/elastic-textarea";
 
 import styles from "./data-insights.module.css";
 import { BrandMark } from "./brand-mark";
@@ -36,6 +38,7 @@ const suggestions = [
 ];
 
 type CaptureState = "idle" | "recording" | "transcribing" | "review";
+type ComposerPlacement = "centered" | "floating" | "constrained";
 type Confirmation = {
   title: string;
   body: string;
@@ -59,6 +62,45 @@ function focusableElements(container: HTMLElement) {
     container.querySelectorAll<HTMLElement>(
       'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])',
     ),
+  );
+}
+
+function preferredScrollBehavior(): ScrollBehavior {
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    ? "auto"
+    : "smooth";
+}
+
+function MicrophoneIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24">
+      <rect x="9" y="3" width="6" height="11" rx="3" />
+      <path d="M6.5 11.5a5.5 5.5 0 0 0 11 0M12 17v4M9 21h6" />
+    </svg>
+  );
+}
+
+function StopIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24">
+      <rect x="7" y="7" width="10" height="10" />
+    </svg>
+  );
+}
+
+function DiscardIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24">
+      <path d="M7 7l10 10M17 7 7 17" />
+    </svg>
+  );
+}
+
+function SendIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24">
+      <path d="M5 12h13M13 7l5 5-5 5" />
+    </svg>
   );
 }
 
@@ -214,6 +256,221 @@ function ProfileView({
   );
 }
 
+function ChatComposer({
+  placement,
+  draft,
+  textareaRef,
+  capture,
+  clock,
+  sending,
+  active,
+  codePointCount,
+  voiceNotice,
+  error,
+  onDraftChange,
+  onSubmit,
+  onKeyDown,
+  onCompositionStart,
+  onCompositionEnd,
+  onRecord,
+  onStopRecording,
+  onCancelCapture,
+  onDiscardTranscript,
+  onHeightChange,
+}: {
+  placement: ComposerPlacement;
+  draft: string;
+  textareaRef: React.RefObject<HTMLTextAreaElement | null>;
+  capture: CaptureState;
+  clock: string;
+  sending: boolean;
+  active: boolean;
+  codePointCount: number;
+  voiceNotice: string | null;
+  error: string | null;
+  onDraftChange: (value: string) => void;
+  onSubmit: (event?: FormEvent) => void;
+  onKeyDown: (event: KeyboardEvent<HTMLTextAreaElement>) => void;
+  onCompositionStart: () => void;
+  onCompositionEnd: () => void;
+  onRecord: () => void;
+  onStopRecording: () => void;
+  onCancelCapture: () => void;
+  onDiscardTranscript: () => void;
+  onHeightChange?: (height: number) => void;
+}) {
+  const formRef = useRef<HTMLFormElement>(null);
+  const placementClass = {
+    centered: styles.composerCentered,
+    floating: styles.composerFloating,
+    constrained: styles.composerConstrained,
+  }[placement];
+  const inputDisabled = sending || active;
+  const sendDisabled =
+    inputDisabled ||
+    capture === "recording" ||
+    capture === "transcribing" ||
+    !draft.trim() ||
+    codePointCount > 4_000;
+
+  const resizeTextarea = useCallback(() => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+    textarea.style.height = "0px";
+    const computed = window.getComputedStyle(textarea);
+    const lineHeight = Number.parseFloat(computed.lineHeight) || 22;
+    const paddingBlock =
+      Number.parseFloat(computed.paddingTop) +
+      Number.parseFloat(computed.paddingBottom);
+    const borderBlock =
+      Number.parseFloat(computed.borderTopWidth) +
+      Number.parseFloat(computed.borderBottomWidth);
+    const size = getElasticTextareaSize({
+      scrollHeight: textarea.scrollHeight,
+      lineHeight,
+      paddingBlock,
+      borderBlock,
+    });
+    textarea.style.height = `${size.height}px`;
+    textarea.style.overflowY = size.overflowing ? "auto" : "hidden";
+    formRef.current?.setAttribute(
+      "data-expanded",
+      String(size.height > lineHeight + paddingBlock + borderBlock + 1),
+    );
+  }, [textareaRef]);
+
+  useLayoutEffect(() => {
+    resizeTextarea();
+  }, [draft, placement, resizeTextarea]);
+
+  useEffect(() => {
+    window.addEventListener("resize", resizeTextarea);
+    return () => window.removeEventListener("resize", resizeTextarea);
+  }, [resizeTextarea]);
+
+  useLayoutEffect(() => {
+    const form = formRef.current;
+    if (!form || !onHeightChange) return;
+    const reportHeight = () => onHeightChange(Math.ceil(form.getBoundingClientRect().height));
+    reportHeight();
+    const observer = new ResizeObserver(reportHeight);
+    observer.observe(form);
+    return () => observer.disconnect();
+  }, [onHeightChange]);
+
+  let status = "Demo voice input · simulated; microphone is not accessed.";
+  let statusTone: "quiet" | "error" = "quiet";
+  if (codePointCount > 4_000) {
+    status = `Shorten your question before sending · ${codePointCount.toLocaleString()} / 4,000`;
+    statusTone = "error";
+  } else if (error) {
+    status = error;
+    statusTone = "error";
+  } else if (active || sending) {
+    status = "Waiting for this reply before you can send another question.";
+  } else if (voiceNotice) {
+    status = voiceNotice;
+  } else if (codePointCount >= 3_600) {
+    status = `${codePointCount.toLocaleString()} / 4,000`;
+  }
+
+  return (
+    <form
+      className={`${styles.composer} ${placementClass}`}
+      data-placement={placement}
+      onSubmit={onSubmit}
+      ref={formRef}
+    >
+      {placement !== "centered" ? <span className={styles.composerFade} aria-hidden="true" /> : null}
+      <div className={styles.composerPill} aria-busy={capture === "transcribing" || sending || active}>
+        <div className={styles.composerInput}>
+          <label htmlFor="chat-question">Your question</label>
+          <textarea
+            ref={textareaRef}
+            id="chat-question"
+            aria-describedby="composer-hint composer-status"
+            aria-invalid={statusTone === "error"}
+            disabled={inputDisabled}
+            placeholder="Ask about bids, people, jobs, or a reporting period…"
+            rows={1}
+            value={draft}
+            onChange={(event) => onDraftChange(event.target.value)}
+            onCompositionStart={onCompositionStart}
+            onCompositionEnd={onCompositionEnd}
+            onKeyDown={onKeyDown}
+          />
+        </div>
+        <div className={styles.composerControls}>
+          {capture === "recording" ? (
+            <>
+              <span className={styles.captureState}>Recording · {clock} / 02:00</span>
+              <button
+                className={styles.iconButton}
+                type="button"
+                aria-label="Stop recording"
+                data-tooltip="Stop recording"
+                onClick={onStopRecording}
+              >
+                <StopIcon />
+              </button>
+              <button className={styles.compactButton} type="button" onClick={onCancelCapture}>Cancel</button>
+            </>
+          ) : null}
+          {capture === "transcribing" ? (
+            <>
+              <span className={styles.captureState}>Transcribing…</span>
+              <button className={styles.compactButton} type="button" onClick={onCancelCapture}>Cancel transcription</button>
+            </>
+          ) : null}
+          {capture === "idle" ? (
+            <button
+              className={styles.iconButton}
+              type="button"
+              aria-label="Record"
+              data-tooltip="Record"
+              disabled={active || sending}
+              onClick={onRecord}
+            >
+              <MicrophoneIcon />
+            </button>
+          ) : null}
+          {capture === "review" ? (
+            <button
+              className={styles.iconButton}
+              type="button"
+              aria-label="Discard transcript"
+              data-tooltip="Discard transcript"
+              onClick={onDiscardTranscript}
+            >
+              <DiscardIcon />
+            </button>
+          ) : null}
+          {capture === "idle" || capture === "review" ? (
+            <button
+              className={`${styles.primaryButton} ${styles.sendButton}`}
+              type="submit"
+              aria-label="Send question"
+              data-tooltip="Send question"
+              disabled={sendDisabled}
+            >
+              <SendIcon />
+              <span className={styles.sendLabel}>{sending ? "Sending…" : "Send"}</span>
+            </button>
+          ) : null}
+        </div>
+      </div>
+      <p
+        className={`${styles.composerStatus} ${statusTone === "error" ? styles.composerStatusError : ""}`}
+        id="composer-status"
+        role={statusTone === "error" ? "alert" : "status"}
+      >
+        {status}
+      </p>
+      <span className={styles.srOnly} id="composer-hint">Enter sends. Shift plus Enter adds a line.</span>
+    </form>
+  );
+}
+
 export function ChatWorkspace({
   chatId,
   view = "chat",
@@ -233,6 +490,7 @@ export function ChatWorkspace({
   const drawerRef = useRef<HTMLElement>(null);
   const accountMenuRef = useRef<HTMLDivElement>(null);
   const messageScrollerRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const reportOpenerRef = useRef<HTMLButtonElement | null>(null);
   const initialReport = useRef(reportId);
   const draftReady = useRef(false);
@@ -259,6 +517,23 @@ export function ChatWorkspace({
   const [transcriptDraft, setTranscriptDraft] = useState("");
   const [confirmation, setConfirmation] = useState<Confirmation | null>(null);
   const [newAnswer, setNewAnswer] = useState(false);
+
+  const updateComposerOverlayHeight = useCallback((height: number) => {
+    const scroller = messageScrollerRef.current;
+    if (!scroller) return;
+    const previousTop = scroller.scrollTop;
+    const wasNearEnd =
+      scroller.scrollHeight - scroller.scrollTop - scroller.clientHeight < 120;
+    scroller.style.setProperty("--composer-overlay-height", `${height}px`);
+    scroller.parentElement?.style.setProperty(
+      "--composer-overlay-height",
+      `${height}px`,
+    );
+    requestAnimationFrame(() => {
+      if (wasNearEnd) scroller.scrollTop = scroller.scrollHeight;
+      else scroller.scrollTop = previousTop;
+    });
+  }, []);
 
   const expireSession = useCallback(() => {
     transcriptionGeneration.current += 1;
@@ -320,7 +595,7 @@ export function ChatWorkspace({
     const frame = requestAnimationFrame(() => {
       setDraft(sessionStorage.getItem(draftKey(chatId)) ?? "");
       draftReady.current = true;
-      if (!initialReport.current) headingRef.current?.focus();
+      if (!initialReport.current) headingRef.current?.focus({ preventScroll: true });
     });
     return () => cancelAnimationFrame(frame);
   }, [chatId, view]);
@@ -357,13 +632,17 @@ export function ChatWorkspace({
     return () => window.clearInterval(interval);
   }, [capture]);
 
-  const stopRecording = useCallback(async () => {
+  const stopRecording = useCallback(async (reason: "manual" | "limit" = "manual") => {
     if (recordingTimeout.current !== null) window.clearTimeout(recordingTimeout.current);
     const generation = ++transcriptionGeneration.current;
     const controller = new AbortController();
     transcriptionController.current = controller;
     setCapture("transcribing");
-    setVoiceNotice(null);
+    setVoiceNotice(
+      reason === "limit"
+        ? "Recording stopped at the two-minute limit. Transcribing…"
+        : "Recording stopped. Transcribing…",
+    );
     try {
       const response = await fetch("/api/transcriptions", {
         method: "POST",
@@ -382,7 +661,7 @@ export function ChatWorkspace({
           return joined;
         });
         setCapture("review");
-        setVoiceNotice("Transcript added. Review it before sending.");
+        setVoiceNotice("Transcript added. Review before sending.");
       } else {
         const copy = {
           empty: "No clear speech was detected. Try recording again or type your question.",
@@ -415,7 +694,7 @@ export function ChatWorkspace({
           const wasNearEnd = !scroller || scroller.scrollHeight - scroller.scrollTop - scroller.clientHeight < 120;
           setOptimisticMessage(null);
           await Promise.all([loadDetail(), loadChats()]);
-          if (wasNearEnd) requestAnimationFrame(() => scroller?.scrollTo({ top: scroller.scrollHeight, behavior: "smooth" }));
+          if (wasNearEnd) requestAnimationFrame(() => scroller?.scrollTo({ top: scroller.scrollHeight, behavior: preferredScrollBehavior() }));
           else setNewAnswer(true);
         }
       } catch (caught) {
@@ -431,7 +710,7 @@ export function ChatWorkspace({
     if (recordingTimeout.current !== null) window.clearTimeout(recordingTimeout.current);
     setCapture("idle");
     setRecordingSeconds(0);
-    setVoiceNotice(null);
+    setVoiceNotice("Simulation canceled. Your typed question was kept.");
   }
 
   function guarded(action: () => void) {
@@ -449,12 +728,12 @@ export function ChatWorkspace({
   function beginRecording() {
     setCapture("recording");
     setRecordingSeconds(0);
-    setVoiceNotice(null);
-    recordingTimeout.current = window.setTimeout(() => void stopRecording(), 120_000);
+    setVoiceNotice("Simulated recording started. No microphone is used.");
+    recordingTimeout.current = window.setTimeout(() => void stopRecording("limit"), 120_000);
   }
 
   function discardTranscript() {
-    const apply = () => { setDraft(preTranscriptDraft); setTranscriptDraft(""); setCapture("idle"); setVoiceNotice(null); setConfirmation(null); };
+    const apply = () => { setDraft(preTranscriptDraft); setTranscriptDraft(""); setCapture("idle"); setVoiceNotice("Transcript discarded. Your earlier question was restored."); setConfirmation(null); };
     if (draft !== transcriptDraft) {
       setConfirmation({ title: "Discard the reviewed transcript?", body: "This restores the question text from before the transcript was added. Changes made during transcript review will be discarded.", confirmLabel: "Discard transcript", cancelLabel: "Keep editing", confirm: apply });
     } else apply();
@@ -467,8 +746,16 @@ export function ChatWorkspace({
     }
     const content = draft;
     const count = [...content].length;
-    if (!content.trim()) return setError("Enter a question to send.");
-    if (count > 4_000) return setError("Your question is over 4,000 characters. Shorten it before sending.");
+    if (!content.trim()) {
+      setError("Enter a question to send.");
+      textareaRef.current?.focus();
+      return;
+    }
+    if (count > 4_000) {
+      setError("Your question is over 4,000 characters. Shorten it before sending.");
+      textareaRef.current?.focus();
+      return;
+    }
     if (requestState?.status === "queued" || requestState?.status === "running") return;
     setSending(true);
     setError(null);
@@ -561,6 +848,36 @@ export function ChatWorkspace({
   const codePointCount = [...draft].length;
   const active = requestState?.status === "queued" || requestState?.status === "running";
   const clock = `${String(Math.floor(recordingSeconds / 60)).padStart(2, "0")}:${String(recordingSeconds % 60).padStart(2, "0")}`;
+  const renderComposer = (
+    placement: ComposerPlacement,
+    onHeightChange?: (height: number) => void,
+  ) => (
+    <ChatComposer
+      placement={placement}
+      draft={draft}
+      textareaRef={textareaRef}
+      capture={capture}
+      clock={clock}
+      sending={sending}
+      active={active}
+      codePointCount={codePointCount}
+      voiceNotice={voiceNotice}
+      error={error}
+      onDraftChange={(value) => {
+        setDraft(value);
+        setError(null);
+      }}
+      onSubmit={submit}
+      onKeyDown={onComposerKeyDown}
+      onCompositionStart={() => { composing.current = true; }}
+      onCompositionEnd={() => { composing.current = false; }}
+      onRecord={beginRecording}
+      onStopRecording={() => void stopRecording()}
+      onCancelCapture={cancelCapture}
+      onDiscardTranscript={discardTranscript}
+      onHeightChange={onHeightChange}
+    />
+  );
 
   let main: ReactNode;
   if (view === "profile") {
@@ -571,40 +888,55 @@ export function ChatWorkspace({
         <main className={styles.conversation}>
           <header className={styles.conversationHeader}>
             <h1 ref={headingRef} tabIndex={-1}>{detail?.chat.title ?? "Ask about your data"}</h1>
-            {detail ? <p>Fictional bid data · UTC</p> : null}
+            <p>Synthetic demo · Fictional bid data · UTC</p>
           </header>
-          <div className={styles.messageScroller} aria-live="polite" ref={messageScrollerRef}>
+          <div className={`${styles.messageScroller} ${detail ? styles.messageScrollerOngoing : styles.messageScrollerEmpty}`} aria-live="polite" ref={messageScrollerRef}>
             {loading ? <p className={styles.statusText}>Loading your workspace…</p> : null}
             {!loading && !detail ? (
               <section className={styles.emptyWorkspace}>
                 <p className={styles.eyebrow}>Synthetic Data Insights</p>
-                <h2>Ask about bids. Inspect the details.</h2>
-                <p>Ask for a count or a detailed report. Your chats are private to your account.</p>
-                {!draft ? <div className={styles.suggestions}><strong>Try a question</strong>{suggestions.map((suggestion) => <button type="button" key={suggestion} onClick={() => setDraft(suggestion)}>{suggestion}</button>)}</div> : null}
+                <h2>What would you like to know?</h2>
+                <p>Ask about bids, people, jobs, or a reporting period.</p>
+                {renderComposer("centered")}
+                <div className={styles.suggestions}>
+                  <strong>Try a prompt</strong>
+                  {suggestions.map((suggestion) => (
+                    <button
+                      type="button"
+                      key={suggestion}
+                      onClick={() => {
+                        setDraft(suggestion);
+                        setError(null);
+                        requestAnimationFrame(() => textareaRef.current?.focus());
+                      }}
+                    >
+                      {suggestion}
+                    </button>
+                  ))}
+                </div>
               </section>
             ) : null}
             {detail?.messages.map((message) => <Message key={message.id} message={message} onOpenReport={openReport} onExpired={expireSession} />)}
             {optimisticMessage && !detail?.messages.some((message) => message.content === optimisticMessage) ? <article className={styles.userMessage}><p className={styles.messageAuthor}>You</p><p className={styles.userText}>{optimisticMessage}</p></article> : null}
             {active ? <p className={styles.processing} role="status">Data Insights is preparing a simulated answer…</p> : null}
-            {newAnswer ? <button className={styles.newAnswerButton} type="button" onClick={() => { messageScrollerRef.current?.scrollTo({ top: messageScrollerRef.current.scrollHeight, behavior: "smooth" }); setNewAnswer(false); }}>New answer ↓</button> : null}
             {requestState && (requestState.status === "failed" || requestState.status === "interrupted") ? <section className={styles.requestError} role="alert"><strong>This answer could not be completed.</strong><p>{requestState.error.message}</p>{requestState.retryable ? <button type="button" onClick={retry}>Retry question</button> : null}</section> : null}
           </div>
-          <form className={styles.composer} onSubmit={submit}>
-            <label htmlFor="chat-question">Your question</label>
-            <textarea id="chat-question" placeholder="Ask about bids, people or a reporting period…" rows={3} value={draft} onChange={(event) => setDraft(event.target.value)} onCompositionStart={() => { composing.current = true; }} onCompositionEnd={() => { composing.current = false; }} onKeyDown={onComposerKeyDown} />
-            <div className={styles.captureRow}>
-              {capture === "idle" ? <button className={styles.secondaryButton} type="button" onClick={beginRecording}>Record</button> : null}
-              {capture === "recording" ? <><span role="status">Recording · {clock} / 02:00</span><button type="button" onClick={() => void stopRecording()}>Stop recording</button><button type="button" onClick={cancelCapture}>Cancel</button></> : null}
-              {capture === "transcribing" ? <><span role="status">Transcribing…</span><button type="button" onClick={cancelCapture}>Cancel transcription</button></> : null}
-              {capture === "review" ? <button type="button" onClick={discardTranscript}>Discard transcript</button> : null}
-              <span className={styles.simulatedLabel}>Simulated recording · no microphone access</span>
-            </div>
-            {voiceNotice ? <p className={styles.voiceNotice} role="status">{voiceNotice}</p> : null}
-            <div className={styles.composerActions}><span>Enter sends · Shift+Enter adds a line</span><button className={styles.primaryButton} type="submit" disabled={sending || active || capture === "recording" || capture === "transcribing" || !draft.trim() || codePointCount > 4_000}>{sending ? "Sending…" : "Send"}</button></div>
-            {active ? <p className={styles.waitNotice}>Wait for this reply before sending another question.</p> : null}
-            {codePointCount >= 3_600 ? <span className={codePointCount > 4_000 ? styles.counterError : styles.counter}>{codePointCount.toLocaleString()} / 4,000</span> : null}
-            {error ? <p className={styles.inlineError} role="alert">{error}</p> : null}
-          </form>
+          {detail ? renderComposer("floating", updateComposerOverlayHeight) : null}
+          {detail && newAnswer ? (
+            <button
+              className={styles.newAnswerButton}
+              type="button"
+              onClick={() => {
+                messageScrollerRef.current?.scrollTo({
+                  top: messageScrollerRef.current.scrollHeight,
+                  behavior: preferredScrollBehavior(),
+                });
+                setNewAnswer(false);
+              }}
+            >
+              New answer ↓
+            </button>
+          ) : null}
         </main>
         {reportId ? <ReportView key={reportId} artifactId={reportId} requestedPage={reportPage} onClose={closeReport} onPage={setReportPage} onExpired={expireSession} /> : null}
       </div>
@@ -624,7 +956,6 @@ export function ChatWorkspace({
           {accountOpen ? <div className={styles.accountMenu} ref={accountMenuRef}><button type="button" onClick={openProfile}>Profile</button><button type="button" onClick={() => { setAccountOpen(false); guarded(() => void logout()); }}>Log out</button></div> : null}
         </div>
       </header>
-      <div className={styles.modeStrip}><strong>Data Insights Chat</strong><span className={styles.modeDesktop}>Synthetic demo · Fictional data · Reporting timezone: UTC</span><span className={styles.modeMobile}>Synthetic demo · Fictional data · UTC</span></div>
       <div className={styles.workspace}>
         {drawerOpen ? <button className={styles.drawerBackdrop} type="button" aria-label="Close chats" onClick={closeDrawer} /> : null}
         <aside ref={drawerRef} className={`${styles.sidebar} ${drawerOpen ? styles.sidebarOpen : ""}`} aria-label="Chat history">

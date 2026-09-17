@@ -169,10 +169,11 @@
   height: 100dvh;
   overflow: hidden;
   display: grid;
-  grid-template-rows: 72px 32px minmax(0, 1fr);
+  grid-template-rows: 64px minmax(0, 1fr);
 }
 
 .appHeader {
+  min-height: 64px;
   gap: 20px;
 }
 
@@ -337,12 +338,14 @@
 .conversation {
   min-width: 0;
   min-height: 0;
+  position: relative;
+  overflow: hidden;
   display: grid;
-  grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-rows: auto minmax(0, 1fr);
 }
 
 .conversationHeader {
-  min-height: 80px;
+  min-height: 64px;
   border-bottom: 1px solid var(--ce-color-divider);
   display: flex;
   align-items: center;
@@ -358,6 +361,10 @@
   line-height: 1.2;
 }
 
+.conversationHeader h1:focus {
+  outline: none;
+}
+
 .conversationHeader p {
   flex: none;
   color: var(--ce-color-muted);
@@ -371,6 +378,16 @@
   scroll-behavior: smooth;
 }
 
+.messageScrollerOngoing {
+  padding-bottom: calc(var(--composer-overlay-height, 140px) + 24px);
+  scroll-padding-bottom: calc(var(--composer-overlay-height, 140px) + 24px);
+}
+
+.messageScrollerEmpty {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
 .statusText,
 .processing {
   color: var(--ce-color-muted);
@@ -382,8 +399,14 @@
 }
 
 .emptyWorkspace {
-  max-width: 720px;
-  margin: 4vh auto 0;
+  width: min(760px, 100%);
+  min-height: 100%;
+  box-sizing: border-box;
+  margin: 0 auto;
+  padding: clamp(28px, 7vh, 64px) 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .emptyWorkspace h2 {
@@ -409,12 +432,13 @@
 
 .suggestions {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
-  margin-top: 32px;
+  margin-top: 24px;
 }
 
 .suggestions strong {
+  grid-column: 1 / -1;
   margin-bottom: 4px;
 }
 
@@ -555,7 +579,6 @@
 
 .openReport,
 .secondaryButton,
-.captureRow button,
 .reportCanvas button,
 .profileActions button,
 .confirmationDialog button,
@@ -577,9 +600,7 @@
   color: var(--ce-color-action);
 }
 
-.capWarning,
-.voiceNotice,
-.waitNotice {
+.capWarning {
   border-left: 3px solid var(--ce-color-action);
   background: var(--ce-color-surface-alt);
   padding: 8px 12px;
@@ -601,61 +622,239 @@
 }
 
 .composer {
-  border-top: 1px solid var(--ce-color-divider);
-  padding: 16px max(24px, calc((100% - 760px) / 2)) 20px;
-  background: var(--ce-color-surface);
+  width: min(760px, calc(100% - 32px));
+  max-width: 760px;
+  box-sizing: border-box;
+  container-type: inline-size;
 }
 
-.composer > label {
+.composerCentered {
+  width: 100%;
+  margin-top: 26px;
+}
+
+.composerFloating,
+.composerConstrained {
+  position: absolute;
+  z-index: 4;
+  left: 50%;
+  bottom: 16px;
+  transform: translateX(-50%);
+  padding-top: 40px;
+  pointer-events: none;
+}
+
+.composerFade {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 48px;
+  background: linear-gradient(
+    to top,
+    var(--ce-color-surface) 0%,
+    rgba(255, 255, 255, 0.86) 58%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  pointer-events: none;
+}
+
+.composerPill {
+  position: relative;
+  z-index: 1;
+  min-height: 72px;
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  box-sizing: border-box;
+  border: 1px solid var(--ce-color-divider);
+  border-radius: 32px;
+  background: var(--ce-color-surface);
+  padding: 8px 8px 8px 18px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+  pointer-events: auto;
+}
+
+.composer[data-expanded="true"] .composerPill {
+  border-radius: 24px;
+}
+
+.composerInput {
+  min-width: 0;
+  flex: 1 1 auto;
+  display: grid;
+  align-self: stretch;
+  align-content: center;
+}
+
+.composerInput label {
   display: block;
-  margin-bottom: 8px;
+  margin-bottom: 1px;
+  color: var(--ce-color-muted);
+  font-size: 0.6875rem;
   font-weight: 700;
+  line-height: 16px;
 }
 
 .composer textarea {
-  min-height: 74px;
-  max-height: 160px;
-  resize: vertical;
-  padding: 12px;
+  min-height: 30px;
+  max-height: 140px;
+  border: 0;
+  outline: 0;
+  resize: none;
+  padding: 4px 0;
+  font: inherit;
+  font-size: 1rem;
+  line-height: 22px;
 }
 
-.composerActions {
-  min-height: 52px;
+.composer textarea:focus-visible {
+  box-shadow: inset 0 -2px 0 var(--ce-color-focus);
+}
+
+.composer textarea:disabled {
+  background: var(--ce-color-surface-alt);
+  color: var(--ce-color-muted);
+  cursor: not-allowed;
+}
+
+.composerControls {
+  min-width: max-content;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 16px;
+  justify-content: flex-end;
+  gap: 6px;
+  align-self: flex-end;
 }
 
-.captureRow {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 8px;
+.captureState {
+  max-width: 180px;
+  color: var(--ce-color-text);
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 18px;
+  text-align: right;
 }
 
-.captureRow > span:first-child {
+.iconButton,
+.compactButton {
+  min-height: 44px;
+  border: 1px solid var(--ce-color-border);
+  background: var(--ce-color-surface);
+  color: var(--ce-color-text);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.iconButton {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 50%;
+  padding: 0;
+}
+
+.iconButton svg,
+.sendButton svg {
+  width: 21px;
+  height: 21px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.iconButton:disabled,
+.compactButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.compactButton {
+  min-width: 44px;
+  border-radius: var(--ce-radius-control);
+  padding: 7px 10px;
+}
+
+.sendButton {
+  position: relative;
+  min-width: 94px;
+  min-height: 44px;
+  gap: 7px;
+  border-radius: 22px;
+  padding: 8px 16px 8px 14px;
+}
+
+.composerStatus {
+  position: relative;
+  z-index: 1;
+  width: fit-content;
+  max-width: calc(100% - 32px);
+  min-height: 20px;
+  box-sizing: border-box;
+  margin: 5px 16px 0;
+  background: var(--ce-color-surface);
+  color: var(--ce-color-muted);
+  padding: 1px 6px;
+  font-size: 0.75rem;
+  line-height: 18px;
+  pointer-events: auto;
+}
+
+.composerStatusError {
+  border-left: 3px solid var(--ce-color-action);
+  color: #9c1018;
   font-weight: 700;
 }
 
-.simulatedLabel {
-  margin-left: auto;
-  color: var(--ce-color-muted);
-  font-size: var(--ce-text-small);
+.iconButton[data-tooltip]::after,
+.sendButton[data-tooltip]::after {
+  position: absolute;
+  z-index: 8;
+  left: 50%;
+  bottom: calc(100% + 8px);
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: 180px;
+  border-radius: var(--ce-radius-control);
+  background: var(--ce-color-surface-inverse);
+  color: var(--ce-color-on-inverse);
+  content: attr(data-tooltip);
+  padding: 6px 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 16px;
+  opacity: 0;
+  pointer-events: none;
 }
 
-.voiceNotice,
-.waitNotice {
-  margin: 4px 0;
-  font-size: var(--ce-text-small);
+.iconButton[data-tooltip]:hover::after,
+.iconButton[data-tooltip]:focus-visible::after,
+.sendButton[data-tooltip]:hover::after,
+.sendButton[data-tooltip]:focus-visible::after {
+  opacity: 1;
+}
+
+@container (max-width: 419px) {
+  .sendButton {
+    width: 44px;
+    min-width: 44px;
+    padding: 0;
+  }
+
+  .sendLabel {
+    display: none;
+  }
 }
 
 .newAnswerButton {
-  position: sticky;
-  bottom: 8px;
-  display: block;
-  margin: 0 auto;
+  position: absolute;
+  z-index: 5;
+  left: 50%;
+  bottom: calc(var(--composer-overlay-height, 140px) + 16px);
+  transform: translateX(-50%);
   border-color: var(--ce-color-action);
   color: var(--ce-color-action);
 }
@@ -1001,7 +1200,6 @@
   border: 0;
 }
 
-.composerActions > span,
 .counter {
   color: var(--ce-color-muted);
   font-size: var(--ce-text-small);
@@ -1036,6 +1234,11 @@
   .backNarrow {
     display: inline;
   }
+
+  .composerFloating,
+  .composerConstrained {
+    bottom: 12px;
+  }
 }
 
 @media (max-width: 767px) {
@@ -1050,7 +1253,7 @@
   }
 
   .appShell {
-    grid-template-rows: 64px 56px minmax(0, 1fr);
+    grid-template-rows: 64px minmax(0, 1fr);
   }
 
   .appHeader {
@@ -1156,7 +1359,12 @@
   }
 
   .conversationHeader {
-    min-height: 66px;
+    min-height: 72px;
+    box-sizing: border-box;
+    align-items: flex-start;
+    justify-content: center;
+    flex-direction: column;
+    gap: 2px;
     padding: 10px 16px;
   }
 
@@ -1165,19 +1373,33 @@
   }
 
   .conversationHeader p {
-    display: none;
+    display: block;
+    margin: 0;
+    font-size: 0.6875rem;
+    line-height: 16px;
   }
 
   .messageScroller {
     padding: 20px 16px;
   }
 
+  .messageScrollerOngoing {
+    padding-bottom: calc(var(--composer-overlay-height, 136px) + 24px);
+    scroll-padding-bottom: calc(var(--composer-overlay-height, 136px) + 24px);
+  }
+
+  .messageScrollerEmpty {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
   .emptyWorkspace {
-    margin-top: 8px;
+    min-height: auto;
+    padding: 24px 12px 36px;
+    justify-content: flex-start;
   }
 
   .suggestions {
-    grid-template-columns: 1fr;
     margin-top: 20px;
   }
 
@@ -1192,16 +1414,55 @@
   }
 
   .composer {
-    padding: 12px 16px 14px;
+    width: calc(100% - 24px);
   }
 
-  .composerActions > span {
-    max-width: 190px;
+  .emptyWorkspace .composerCentered {
+    width: calc(100vw - 24px);
+    max-width: calc(100vw - 24px);
+    align-self: center;
   }
 
-  .simulatedLabel {
-    width: 100%;
-    margin-left: 0;
+  .composerFloating,
+  .composerConstrained {
+    bottom: max(8px, env(safe-area-inset-bottom));
+    padding-top: 36px;
+  }
+
+  .composerFade {
+    height: 44px;
+  }
+
+  .composerPill {
+    min-height: 68px;
+    gap: 6px;
+    padding: 7px 7px 7px 14px;
+  }
+
+  .composerInput {
+    flex-basis: 132px;
+  }
+
+  .composerControls {
+    min-width: 0;
+    gap: 4px;
+  }
+
+  .captureState {
+    max-width: 92px;
+    font-size: 0.6875rem;
+    line-height: 15px;
+  }
+
+  .compactButton {
+    padding-inline: 8px;
+    font-size: 0.75rem;
+  }
+
+  .composerStatus {
+    max-width: calc(100% - 24px);
+    margin-left: 12px;
+    margin-right: 12px;
   }
 
   .attachment {
@@ -1280,6 +1541,12 @@
   .confirmationDialog > div,
   .pageError div {
     flex-direction: column;
+  }
+}
+
+@media (max-width: 640px) {
+  .suggestions {
+    grid-template-columns: 1fr;
   }
 }
 
