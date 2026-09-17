@@ -25,7 +25,7 @@
     "presentation": "popover",
     "ariaModal": null,
     "searchFocused": true,
-    "width": 680,
+    "width": 760,
     "insideViewport": true,
     "obscuresTextarea": false,
     "obscuresSend": false
@@ -119,5 +119,5 @@
     "searchFocused": true
   },
   "browser": "Chrome/153.0.8010.36",
-  "checkedAt": "2026-09-17T16:58:11.845Z"
+  "checkedAt": "2026-09-17T17:40:17.431Z"
 }

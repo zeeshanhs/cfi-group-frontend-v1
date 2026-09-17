@@ -178,54 +178,63 @@ export function PromptBrowser({
       >
         <div className={styles.promptBrowserFixed}>
           <div className={styles.promptBrowserHeader}>
-            <h2 id="prompt-browser-title">Browse prompts</h2>
+            <div>
+              <h2 id="prompt-browser-title">Browse prompts</h2>
+              {!loading && !error && catalog ? (
+                <span className={styles.promptResultSummary}>
+                  {resultSummary}
+                </span>
+              ) : null}
+            </div>
             <button type="button" onClick={onClose}>
               Close
             </button>
           </div>
-          <label className={styles.promptSearchLabel} htmlFor="prompt-search">
-            Search prompts
-          </label>
-          <input
-            className={styles.promptSearch}
-            id="prompt-search"
-            ref={searchRef}
-            type="search"
-            placeholder="Search prompts"
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            onKeyDown={(event) => {
-              if (event.key === "Enter") event.preventDefault();
-            }}
-          />
-          {catalog ? (
-            <div
-              className={styles.promptCategories}
-              role="group"
-              aria-label="Prompt categories"
-            >
-              <button
-                type="button"
-                aria-pressed={selectedCategoryId === null}
-                onClick={() => setCategoryId(null)}
-              >
-                All
-              </button>
-              {catalog.categories.map((category) => (
-                <button
-                  type="button"
-                  aria-pressed={selectedCategoryId === category.id}
-                  key={category.id}
-                  onClick={() => setCategoryId(category.id)}
+          <div className={styles.promptBrowserControls}>
+            <label className={styles.promptSearchControl} htmlFor="prompt-search">
+              <span>Search prompts</span>
+              <input
+                className={styles.promptSearch}
+                id="prompt-search"
+                ref={searchRef}
+                type="search"
+                placeholder="Search prompts"
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") event.preventDefault();
+                }}
+              />
+            </label>
+            {catalog ? (
+              <div className={styles.promptCategoryControl}>
+                <span id="prompt-category-label">Categories</span>
+                <div
+                  className={styles.promptCategories}
+                  role="group"
+                  aria-labelledby="prompt-category-label"
                 >
-                  {category.label}
-                </button>
-              ))}
-            </div>
-          ) : null}
-          {!loading && !error && catalog ? (
-            <p className={styles.promptResultSummary}>{resultSummary}</p>
-          ) : null}
+                  <button
+                    type="button"
+                    aria-pressed={selectedCategoryId === null}
+                    onClick={() => setCategoryId(null)}
+                  >
+                    All
+                  </button>
+                  {catalog.categories.map((category) => (
+                    <button
+                      type="button"
+                      aria-pressed={selectedCategoryId === category.id}
+                      key={category.id}
+                      onClick={() => setCategoryId(category.id)}
+                    >
+                      {category.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+          </div>
           <span className={styles.srOnly} aria-live="polite" aria-atomic="true">
             {announcement}
           </span>
