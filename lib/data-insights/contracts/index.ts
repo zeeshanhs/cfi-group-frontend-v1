@@ -114,6 +114,7 @@ export type ChatDetailDto = {
   chat: ChatSummaryDto;
   messages: MessageDto[];
   activeRequest: RequestStatusDto | null;
+  latestRequest: RequestStatusDto | null;
 };
 
 export type CreateMessageRequestDto = {
@@ -157,6 +158,10 @@ export type TableArtifactDetailDto = TableArtifactSummaryDto & {
     queriedAt: string;
     dataUpdatedThrough: string | null;
     mode: "synthetic";
+    dateBasis: string | null;
+    periodStart: string | null;
+    periodEndExclusive: string | null;
+    ordering: string | null;
   };
 };
 
@@ -465,6 +470,10 @@ export function assertTableArtifactDetailDto(
   assertColumns(value.columns);
   for (const row of value.previewRows) assertTableRow(row, value.columns);
   assertUtcTimestamp(value.provenance.queriedAt, "Query timestamp");
+  if (value.provenance.periodStart !== null) assertUtcTimestamp(value.provenance.periodStart, "Period start");
+  if (value.provenance.periodEndExclusive !== null) assertUtcTimestamp(value.provenance.periodEndExclusive, "Period end");
+  if (value.provenance.dateBasis !== null) assertUtcSafeText(value.provenance.dateBasis, "date basis");
+  if (value.provenance.ordering !== null) assertUtcSafeText(value.provenance.ordering, "ordering");
   return value;
 }
 

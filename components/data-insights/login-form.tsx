@@ -119,9 +119,12 @@ export function LoginForm() {
           type="submit"
           disabled={pending}
         >
-          {pending ? "Signing in…" : "Sign in"}
+          {pending ? "Checking your account…" : "Sign in"}
         </button>
       </form>
+      <p className={styles.loginSupport}>
+        Need access? Contact your CFI prototype administrator.
+      </p>
       <p className={styles.disclosure}>
         This local prototype uses fictional accounts and synthetic data. It is
         not connected to a live identity or business-data service.

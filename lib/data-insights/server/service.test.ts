@@ -171,6 +171,14 @@ describe("Data Insights service", () => {
       databasePath,
     );
     expect(detail.columns).toHaveLength(10);
+    expect(detail.provenance).toMatchObject({
+      mode: "synthetic",
+      reportingTimezone: "UTC",
+      dateBasis: "Bid creation timestamp",
+      periodStart: "2026-09-09T00:00:00.000Z",
+      periodEndExclusive: "2026-09-16T00:00:00.000Z",
+      ordering: "Created at descending; Bid ID descending",
+    });
     expect(detail.previewRows).toEqual(pageOne.rows.slice(0, 3));
     expect(pageOne.rows).toHaveLength(50);
     expect(pageOne.hasNextPage).toBe(true);
@@ -278,6 +286,7 @@ describe("Data Insights service", () => {
       "user_jordan",
       submission.request.id,
     );
+    expect(getChatDetail("user_jordan", submission.chat.id, databasePath).latestRequest).toEqual(failed);
     expect(failed.status).toBe("failed");
     delete process.env.CFI_DATA_INSIGHTS_FAILURE_MODE;
     const queued = retryRequest(

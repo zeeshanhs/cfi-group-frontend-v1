@@ -20,8 +20,17 @@ export async function POST(request: NextRequest) {
     requireSameOrigin(request);
     requireUser(request);
     const input = parseTranscriptionRequest(await readJson(request));
+    const configured = process.env.CFI_DATA_INSIGHTS_TRANSCRIPTION_SCENARIO;
+    const scenario =
+      configured === "success" ||
+      configured === "empty" ||
+      configured === "failed" ||
+      configured === "timeout"
+        ? configured
+        : input.scenario;
+    await new Promise((resolve) => setTimeout(resolve, 650));
     let result: TranscriptionResponseDto;
-    if (!input.scenario || input.scenario === "success") {
+    if (!scenario || scenario === "success") {
       result = {
         mode: "simulated",
         status: "completed",
@@ -37,9 +46,9 @@ export async function POST(request: NextRequest) {
       result = {
         mode: "simulated",
         status: "failed",
-        code: input.scenario,
-        message: messages[input.scenario],
-        retryable: input.scenario !== "empty",
+        code: scenario,
+        message: messages[scenario],
+        retryable: scenario !== "empty",
       };
     }
     return noStoreJson(result);

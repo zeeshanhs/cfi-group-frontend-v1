@@ -488,10 +488,18 @@ export function getChatDetail(
         ORDER BY submitted_at DESC LIMIT 1
       `)
       .get(chatId) as RequestRow | undefined;
+    const latest = database
+      .prepare(`
+        SELECT * FROM chat_requests
+        WHERE chat_id = ?
+        ORDER BY submitted_at DESC LIMIT 1
+      `)
+      .get(chatId) as RequestRow | undefined;
     return {
       chat: chatSummary(chat),
       messages: messages.map((row) => messageDto(database, row)),
       activeRequest: active ? requestStatusDto(database, active) : null,
+      latestRequest: latest ? requestStatusDto(database, latest) : null,
     };
   }, databasePath);
 }
@@ -593,6 +601,10 @@ function persistCompletedPlan(
         queriedAt: plan.artifact.queriedAt,
         dataUpdatedThrough: plan.artifact.dataUpdatedThrough,
         mode: "synthetic",
+        dateBasis: plan.artifact.dateBasis,
+        periodStart: plan.artifact.periodStart,
+        periodEndExclusive: plan.artifact.periodEndExclusive,
+        ordering: plan.artifact.ordering,
       },
     });
     database
@@ -620,6 +632,10 @@ function persistCompletedPlan(
           queriedAt: plan.artifact.queriedAt,
           dataUpdatedThrough: plan.artifact.dataUpdatedThrough,
           mode: "synthetic",
+          dateBasis: plan.artifact.dateBasis,
+          periodStart: plan.artifact.periodStart,
+          periodEndExclusive: plan.artifact.periodEndExclusive,
+          ordering: plan.artifact.ordering,
         }),
         scopeKey,
         completedAt,
@@ -797,6 +813,16 @@ export function getArtifactDetail(
   return withDataInsightsDatabase((database) => {
     const artifact = ownedArtifact(database, userId, artifactId);
     const columns = parseJson<TableColumnDto[]>(artifact.columns_json);
+    const rawProvenance = parseJson<Partial<TableArtifactDetailDto["provenance"]>>(
+      artifact.provenance_json,
+    );
+    if (!rawProvenance.queriedAt) {
+      throw new DataInsightsServiceError(
+        "artifact_invalid",
+        "This report is unavailable.",
+        500,
+      );
+    }
     const previewRows = database
       .prepare(
         "SELECT row_json FROM chat_artifact_rows WHERE artifact_id = ? ORDER BY row_index LIMIT 3",
@@ -808,9 +834,16 @@ export function getArtifactDetail(
       columns,
       previewRows,
       filters: parseJson<string[]>(artifact.filters_json),
-      provenance: parseJson<TableArtifactDetailDto["provenance"]>(
-        artifact.provenance_json,
-      ),
+      provenance: {
+        reportingTimezone: rawProvenance.reportingTimezone ?? "UTC",
+        queriedAt: rawProvenance.queriedAt,
+        dataUpdatedThrough: rawProvenance.dataUpdatedThrough ?? null,
+        mode: "synthetic",
+        dateBasis: rawProvenance.dateBasis ?? null,
+        periodStart: rawProvenance.periodStart ?? null,
+        periodEndExclusive: rawProvenance.periodEndExclusive ?? null,
+        ordering: rawProvenance.ordering ?? null,
+      },
     });
   }, databasePath);
 }

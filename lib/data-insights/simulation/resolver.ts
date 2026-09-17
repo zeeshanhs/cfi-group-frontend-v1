@@ -24,7 +24,14 @@ export type SimulatedArtifact = {
   filters: string[];
   queriedAt: string;
   dataUpdatedThrough: string | null;
+  dateBasis: string;
+  periodStart: string;
+  periodEndExclusive: string;
+  ordering: string;
 };
+
+const CREATED_BASIS = "Bid creation timestamp";
+const DEFAULT_ORDERING = "Created at descending; Bid ID descending";
 
 export type SimulationPlan = {
   bodyMarkdown: string;
@@ -152,6 +159,10 @@ export function resolveSimulation(
         ],
         queriedAt: FIXTURE_QUERY_TIME,
         dataUpdatedThrough: FIXTURE_WATERMARK,
+        dateBasis: CREATED_BASIS,
+        periodStart: "2026-08-01T00:00:00.000Z",
+        periodEndExclusive: "2026-09-01T00:00:00.000Z",
+        ordering: DEFAULT_ORDERING,
       },
     );
   }
@@ -175,6 +186,10 @@ export function resolveSimulation(
         ],
         queriedAt: FIXTURE_QUERY_TIME,
         dataUpdatedThrough: null,
+        dateBasis: CREATED_BASIS,
+        periodStart: "2026-09-09T00:00:00.000Z",
+        periodEndExclusive: "2026-09-16T00:00:00.000Z",
+        ordering: DEFAULT_ORDERING,
       },
     );
   }
@@ -279,6 +294,10 @@ export function resolveSimulation(
         ],
         queriedAt: FIXTURE_QUERY_TIME,
         dataUpdatedThrough: FIXTURE_WATERMARK,
+        dateBasis: CREATED_BASIS,
+        periodStart: "2026-09-09T00:00:00.000Z",
+        periodEndExclusive: "2026-09-16T00:00:00.000Z",
+        ordering: DEFAULT_ORDERING,
       },
     );
   }
@@ -301,6 +320,10 @@ export function resolveSimulation(
         ],
         queriedAt: FIXTURE_QUERY_TIME,
         dataUpdatedThrough: FIXTURE_WATERMARK,
+        dateBasis: CREATED_BASIS,
+        periodStart: "2026-06-01T00:00:00.000Z",
+        periodEndExclusive: "2026-06-08T00:00:00.000Z",
+        ordering: DEFAULT_ORDERING,
       },
     );
   }
