@@ -1,0 +1,377 @@
+{
+  "newChatDesktop": {
+    "centered": "centered",
+    "starterCount": 8,
+    "bodyOverflowX": false,
+    "textareaLabel": "Your question"
+  },
+  "promptDesktop": {
+    "presentation": "popover",
+    "searchFocused": true,
+    "resultCount": 6,
+    "insideViewport": true
+  },
+  "promptFilter": {
+    "query": "Casey",
+    "selected": "People",
+    "results": 2
+  },
+  "promptEmpty": {
+    "emptyVisible": true,
+    "clearFiltersVisible": true
+  },
+  "promptFillOnly": {
+    "draftFilled": true,
+    "textareaFocused": true,
+    "noMessageCreated": true
+  },
+  "promptConfirmation": {
+    "nondestructiveFocus": true,
+    "draftStillPresent": true,
+    "cancelKeepsBrowser": {
+      "browserOpen": true,
+      "draftKept": true,
+      "resultFocused": true
+    },
+    "replaceFillsWithoutSending": {
+      "textareaFocused": true,
+      "draftReplaced": true,
+      "noMessageCreated": true
+    }
+  },
+  "promptErrorRecovery": {
+    "recoveredResults": 6,
+    "freeformEnabled": true
+  },
+  "requestError": {
+    "alertVisible": true,
+    "draftRetained": true,
+    "textareaFocused": false
+  },
+  "processing": {
+    "announced": true,
+    "sendDisabled": true
+  },
+  "composerGrowth": {
+    "sixLines": {
+      "clientHeight": 140,
+      "scrollHeight": 140
+    },
+    "sevenLines": {
+      "clientHeight": 140,
+      "scrollHeight": 162,
+      "internalScroll": true
+    }
+  },
+  "voice": {
+    "recordingAnnounced": true,
+    "reviewAnnounced": true,
+    "noAutoSend": true,
+    "transcriptAdded": true,
+    "restoredTypedDraft": true
+  },
+  "accountMenuEscape": {
+    "closed": true,
+    "focusReturned": true
+  },
+  "promptMobile": {
+    "presentation": "sheet",
+    "ariaModal": "true",
+    "focusableCount": 12,
+    "bodyOverflowX": false,
+    "wrapsLastToFirst": true,
+    "escapeRestoresOpener": true
+  },
+  "drawerEscape": {
+    "focusReturned": true,
+    "collapsed": true
+  },
+  "keyboardRepresentative": {
+    "textareaVisible": true,
+    "sendVisible": true,
+    "bodyOverflowX": false
+  },
+  "reportDesktop": {
+    "report": {
+      "left": 664,
+      "right": 1440,
+      "top": 64,
+      "bottom": 900,
+      "width": 776,
+      "height": 836
+    },
+    "conversation": {
+      "left": 248,
+      "right": 664,
+      "top": 64,
+      "bottom": 900,
+      "width": 416,
+      "height": 836
+    },
+    "form": {
+      "left": 264,
+      "right": 648,
+      "top": 644,
+      "bottom": 884,
+      "width": 384,
+      "height": 240
+    },
+    "fullWorkspaceHeight": true,
+    "composerPlacement": "constrained",
+    "composerContained": true,
+    "reportBoundaryInterceptedByChat": false,
+    "visibleLabel": "Your question",
+    "controlsAtLeast44": true,
+    "tableScrollWidth": 1528,
+    "tableClientWidth": 775,
+    "bodyOverflowX": false,
+    "headingFocused": true,
+    "lastMessageClearance": {
+      "clears": true,
+      "lastBottom": 608.3125,
+      "composerTop": 644,
+      "scrollTop": 371,
+      "scrollHeight": 1111,
+      "clientHeight": 740,
+      "paddingBottom": "264px"
+    }
+  },
+  "constrainedTooltips": {
+    "prompt": {
+      "content": "\"Browse prompts\"",
+      "opacity": "1",
+      "left": "0px",
+      "transform": "none"
+    },
+    "send": {
+      "content": "\"Send question\"",
+      "right": "0px",
+      "left": "-56.6719px",
+      "transform": "none"
+    },
+    "sendHover": {
+      "content": "\"Send question\"",
+      "opacity": "1"
+    }
+  },
+  "reportOverlay": {
+    "placement": "constrained",
+    "contained": true,
+    "searchFocused": true
+  },
+  "tabletReplacement": {
+    "promptClosed": true,
+    "reportFocused": true,
+    "composerVisible": false,
+    "composerAtPoint": false,
+    "reportHeight": 960,
+    "backHeadingOverlap": false,
+    "bodyOverflowX": false
+  },
+  "tabletRestoration": {
+    "draft": "Line one\nLine two\nLine three\nLine four\nLine five\nLine six",
+    "draftRestored": true,
+    "scrollTop": 138,
+    "maximumScrollTop": 138,
+    "expectedScrollTop": 138,
+    "anchorRestored": true,
+    "reportOpenerFocused": true
+  },
+  "pagination": {
+    "pageTwoRows": 14,
+    "horizontalPosition": 320,
+    "verticalPosition": 0,
+    "urlPage": "2",
+    "stableFooterFocus": true
+  },
+  "reportPageLoadingAnnounced": true,
+  "reportPageError": {
+    "alertVisible": true,
+    "footerFocused": true,
+    "retryVisible": true
+  },
+  "desktopRestoration": {
+    "draftRestored": true,
+    "reportOpenerFocused": true
+  },
+  "rememberedReportPage": "2",
+  "reportMobile": {
+    "reportOnly": true,
+    "hiddenComposerAtBottom": false,
+    "tableScrollLeft": 0,
+    "reportLeft": 0,
+    "headerText": "Chats\nJE",
+    "bodyOverflowX": false
+  },
+  "mobileRestoration": {
+    "draftRestored": true,
+    "reportOpenerFocused": true
+  },
+  "newAnswer": {
+    "startedAwayFromEnd": true,
+    "controlVisible": true,
+    "focusStayedOutOfNewMessage": true
+  },
+  "emptyReport": {
+    "heading": "Bids created: 1–7 June 2026",
+    "zeroRows": true,
+    "columnCount": 10,
+    "noPaginationButtons": true
+  },
+  "reducedMotion": {
+    "preferenceMatches": true,
+    "scrollBehavior": "auto",
+    "sidebarTransition": "0s"
+  },
+  "overflowMatrix": [
+    {
+      "width": 320,
+      "view": "newChat",
+      "documentScrollWidth": 320,
+      "viewportWidth": 320,
+      "noHorizontalBodyOverflow": true
+    },
+    {
+      "width": 320,
+      "view": "ongoing",
+      "documentScrollWidth": 320,
+      "viewportWidth": 320,
+      "noHorizontalBodyOverflow": true
+    },
+    {
+      "width": 320,
+      "view": "report",
+      "documentScrollWidth": 320,
+      "viewportWidth": 320,
+      "noHorizontalBodyOverflow": true
+    },
+    {
+      "width": 375,
+      "view": "newChat",
+      "documentScrollWidth": 375,
+      "viewportWidth": 375,
+      "noHorizontalBodyOverflow": true
+    },
+    {
+      "width": 375,
+      "view": "ongoing",
+      "documentScrollWidth": 375,
+      "viewportWidth": 375,
+      "noHorizontalBodyOverflow": true
+    },
+    {
+      "width": 375,
+      "view": "report",
+      "documentScrollWidth": 375,
+      "viewportWidth": 375,
+      "noHorizontalBodyOverflow": true
+    },
+    {
+      "width": 390,
+      "view": "newChat",
+      "documentScrollWidth": 390,
+      "viewportWidth": 390,
+      "noHorizontalBodyOverflow": true
+    },
+    {
+      "width": 390,
+      "view": "ongoing",
+      "documentScrollWidth": 390,
+      "viewportWidth": 390,
+      "noHorizontalBodyOverflow": true
+    },
+    {
+      "width": 390,
+      "view": "report",
+      "documentScrollWidth": 390,
+      "viewportWidth": 390,
+      "noHorizontalBodyOverflow": true
+    },
+    {
+      "width": 768,
+      "view": "newChat",
+      "documentScrollWidth": 768,
+      "viewportWidth": 768,
+      "noHorizontalBodyOverflow": true
+    },
+    {
+      "width": 768,
+      "view": "ongoing",
+      "documentScrollWidth": 768,
+      "viewportWidth": 768,
+      "noHorizontalBodyOverflow": true
+    },
+    {
+      "width": 768,
+      "view": "report",
+      "documentScrollWidth": 768,
+      "viewportWidth": 768,
+      "noHorizontalBodyOverflow": true
+    },
+    {
+      "width": 1024,
+      "view": "newChat",
+      "documentScrollWidth": 1024,
+      "viewportWidth": 1024,
+      "noHorizontalBodyOverflow": true
+    },
+    {
+      "width": 1024,
+      "view": "ongoing",
+      "documentScrollWidth": 1024,
+      "viewportWidth": 1024,
+      "noHorizontalBodyOverflow": true
+    },
+    {
+      "width": 1024,
+      "view": "report",
+      "documentScrollWidth": 1024,
+      "viewportWidth": 1024,
+      "noHorizontalBodyOverflow": true
+    },
+    {
+      "width": 1280,
+      "view": "newChat",
+      "documentScrollWidth": 1280,
+      "viewportWidth": 1280,
+      "noHorizontalBodyOverflow": true
+    },
+    {
+      "width": 1280,
+      "view": "ongoing",
+      "documentScrollWidth": 1280,
+      "viewportWidth": 1280,
+      "noHorizontalBodyOverflow": true
+    },
+    {
+      "width": 1280,
+      "view": "report",
+      "documentScrollWidth": 1280,
+      "viewportWidth": 1280,
+      "noHorizontalBodyOverflow": true
+    },
+    {
+      "width": 1440,
+      "view": "newChat",
+      "documentScrollWidth": 1440,
+      "viewportWidth": 1440,
+      "noHorizontalBodyOverflow": true
+    },
+    {
+      "width": 1440,
+      "view": "ongoing",
+      "documentScrollWidth": 1440,
+      "viewportWidth": 1440,
+      "noHorizontalBodyOverflow": true
+    },
+    {
+      "width": 1440,
+      "view": "report",
+      "documentScrollWidth": 1440,
+      "viewportWidth": 1440,
+      "noHorizontalBodyOverflow": true
+    }
+  ],
+  "browser": "Chrome/153.0.8010.36",
+  "checkedAt": "2026-09-17T19:31:20.890Z"
+}

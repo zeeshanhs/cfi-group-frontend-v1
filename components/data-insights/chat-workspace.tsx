@@ -555,6 +555,8 @@ export function ChatWorkspace({
   const messageScrollerRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const reportOpenerRef = useRef<HTMLButtonElement | null>(null);
+  const reportScrollTopRef = useRef<number | null>(null);
+  const restoreReportFocusRef = useRef(false);
   const initialReport = useRef(reportId);
   const draftReady = useRef(false);
   const composing = useRef(false);
@@ -704,6 +706,57 @@ export function ChatWorkspace({
   useEffect(() => {
     if (draftReady.current && view === "chat") sessionStorage.setItem(draftKey(chatId), draft);
   }, [chatId, draft, view]);
+
+  useEffect(() => {
+    if (reportId || !restoreReportFocusRef.current) return;
+    restoreReportFocusRef.current = false;
+    let restoreFrame = 0;
+    const frame = requestAnimationFrame(() => {
+      restoreFrame = requestAnimationFrame(() => {
+        if (reportScrollTopRef.current !== null && messageScrollerRef.current) {
+          const previousBehavior = messageScrollerRef.current.style.scrollBehavior;
+          messageScrollerRef.current.style.scrollBehavior = "auto";
+          messageScrollerRef.current.scrollTop = reportScrollTopRef.current;
+          messageScrollerRef.current.style.scrollBehavior = previousBehavior;
+        }
+        const target =
+          reportOpenerRef.current ??
+          document.querySelector<HTMLButtonElement>(
+            'button[aria-label^="Open report:"]',
+          );
+        (target ?? headingRef.current)?.focus({ preventScroll: true });
+      });
+    });
+    return () => {
+      cancelAnimationFrame(frame);
+      cancelAnimationFrame(restoreFrame);
+    };
+  }, [reportId]);
+
+  useEffect(() => {
+    if (!reportId) return;
+    const replacementQuery = window.matchMedia("(max-width: 1279px)");
+    const closeChatOverlayForReplacement = () => {
+      if (!replacementQuery.matches) return;
+      setPromptBrowserOpen(false);
+      setPromptOpener(null);
+      requestAnimationFrame(() => {
+        document
+          .querySelector<HTMLElement>("#report-heading")
+          ?.focus({ preventScroll: true });
+      });
+    };
+    closeChatOverlayForReplacement();
+    replacementQuery.addEventListener(
+      "change",
+      closeChatOverlayForReplacement,
+    );
+    return () =>
+      replacementQuery.removeEventListener(
+        "change",
+        closeChatOverlayForReplacement,
+      );
+  }, [reportId]);
 
   const closeDrawer = useCallback(() => {
     setDrawerOpen(false);
@@ -966,19 +1019,22 @@ export function ChatWorkspace({
   function openReport(artifactId: string, source: HTMLButtonElement) {
     guarded(() => {
       reportOpenerRef.current = source;
+      reportScrollTopRef.current = messageScrollerRef.current?.scrollTop ?? 0;
+      setPromptBrowserOpen(false);
+      setPromptOpener(null);
       const remembered = sessionStorage.getItem(`cfi-data-insights-report-page:${artifactId}`) ?? "1";
       router.replace(`${pathname}?report=${encodeURIComponent(artifactId)}&page=${remembered}`, { scroll: false });
     });
   }
 
   function closeReport() {
+    if (messageScrollerRef.current?.getClientRects().length) {
+      reportScrollTopRef.current = messageScrollerRef.current.scrollTop;
+    }
+    setPromptBrowserOpen(false);
+    setPromptOpener(null);
+    restoreReportFocusRef.current = true;
     router.replace(pathname, { scroll: false });
-    requestAnimationFrame(() => {
-      const target =
-        reportOpenerRef.current ??
-        document.querySelector<HTMLButtonElement>('button[aria-label^="Open report:"]');
-      (target ?? headingRef.current)?.focus({ preventScroll: true });
-    });
   }
 
   function setReportPage(page: number) {
@@ -1082,7 +1138,12 @@ export function ChatWorkspace({
             {active ? <p className={styles.processing} role="status">Data Insights is preparing a simulated answer…</p> : null}
             {requestState && (requestState.status === "failed" || requestState.status === "interrupted") ? <section className={styles.requestError} role="alert"><strong>This answer could not be completed.</strong><p>{requestState.error.message}</p>{requestState.retryable ? <button type="button" onClick={retry}>Retry question</button> : null}</section> : null}
           </div>
-          {detail ? renderComposer("floating", updateComposerOverlayHeight) : null}
+          {detail
+            ? renderComposer(
+                reportId ? "constrained" : "floating",
+                updateComposerOverlayHeight,
+              )
+            : null}
           {detail && newAnswer ? (
             <button
               className={styles.newAnswerButton}

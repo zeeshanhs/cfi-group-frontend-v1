@@ -1,6 +1,12 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  type RefObject,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 import type {
   ApiErrorDto,
@@ -83,12 +89,18 @@ function countLine(detail: TableArtifactDetailDto) {
 function ReportTable({
   detail,
   page,
+  scrollerRef,
 }: {
   detail: TableArtifactDetailDto;
   page: TableRowPageDto;
+  scrollerRef: RefObject<HTMLDivElement | null>;
 }) {
   return (
-    <div className={styles.reportTableScroller} tabIndex={0}>
+    <div
+      className={styles.reportTableScroller}
+      ref={scrollerRef}
+      tabIndex={0}
+    >
       <table className={styles.reportTable}>
         <caption>
           {detail.title.startsWith("Bids created")
@@ -260,6 +272,9 @@ export function ReportView({
 }) {
   const headingRef = useRef<HTMLHeadingElement>(null);
   const tableScrollerRef = useRef<HTMLDivElement | null>(null);
+  const footerRef = useRef<HTMLElement | null>(null);
+  const paginationIntentRef = useRef<"previous" | "next" | null>(null);
+  const horizontalScrollRef = useRef(0);
   const [detail, setDetail] = useState<TableArtifactDetailDto | null>(null);
   const [page, setPage] = useState<TableRowPageDto | null>(null);
   const [loadError, setLoadError] = useState<LoadError | null>(null);
@@ -268,8 +283,9 @@ export function ReportView({
   const [pageAttempt, setPageAttempt] = useState(0);
 
   useEffect(() => {
-    headingRef.current?.focus({ preventScroll: true });
-  }, [artifactId]);
+    horizontalScrollRef.current = 0;
+    if (detail) headingRef.current?.focus({ preventScroll: true });
+  }, [artifactId, detail]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -299,7 +315,7 @@ export function ReportView({
   useEffect(() => {
     if (!detail) return;
     const controller = new AbortController();
-    const priorX = tableScrollerRef.current?.scrollLeft ?? 0;
+    const priorX = horizontalScrollRef.current;
     void fetch(
       `/api/artifacts/${artifactId}/rows?page=${requestedPage}&pageSize=50`,
       { cache: "no-store", signal: controller.signal },
@@ -313,11 +329,34 @@ export function ReportView({
         setPage(next);
         setPageError(null);
         requestAnimationFrame(() => {
-          if (tableScrollerRef.current) tableScrollerRef.current.scrollLeft = priorX;
+          if (tableScrollerRef.current) {
+            tableScrollerRef.current.scrollLeft = priorX;
+            tableScrollerRef.current.scrollTop = 0;
+          }
+          const intent = paginationIntentRef.current;
+          if (!intent) return;
+          paginationIntentRef.current = null;
+          const activatingControl = footerRef.current?.querySelector<HTMLButtonElement>(
+            `[data-page-direction="${intent}"]`,
+          );
+          const activatingControlIsUnavailable =
+            (intent === "previous" && next.page <= 1) ||
+            (intent === "next" && !next.hasNextPage);
+          if (activatingControl && !activatingControlIsUnavailable) {
+            activatingControl.focus({ preventScroll: true });
+          } else {
+            footerRef.current?.focus({ preventScroll: true });
+          }
         });
       })
       .catch(() => {
-        if (!controller.signal.aborted) setPageError(requestedPage);
+        if (!controller.signal.aborted) {
+          setPageError(requestedPage);
+          paginationIntentRef.current = null;
+          requestAnimationFrame(() =>
+            footerRef.current?.focus({ preventScroll: true }),
+          );
+        }
       });
     return () => controller.abort();
   }, [artifactId, detail, onExpired, pageAttempt, requestedPage]);
@@ -334,6 +373,13 @@ export function ReportView({
     const scope = detail.isTruncated ? " saved rows" : "";
     return `Rows ${first.toLocaleString()}–${last.toLocaleString()} of ${detail.snapshotRowCount.toLocaleString()}${scope} · Page ${page.page} of ${pages}`;
   }, [detail, page, pages]);
+
+  function requestPage(nextPage: number, intent: "previous" | "next" | null) {
+    horizontalScrollRef.current =
+      tableScrollerRef.current?.scrollLeft ?? horizontalScrollRef.current;
+    paginationIntentRef.current = intent;
+    onPage(nextPage);
+  }
 
   return (
     <section className={styles.reportCanvas} aria-labelledby="report-heading">
@@ -418,22 +464,48 @@ export function ReportView({
                 <p>Page {requestedPage} could not be loaded. Try again or return to page 1.</p>
                 <div>
                   <button type="button" onClick={() => { setPageError(null); setPageAttempt((value) => value + 1); }}>Retry page</button>
-                  <button type="button" onClick={() => onPage(1)}>Return to page 1</button>
+                  <button type="button" onClick={() => requestPage(1, null)}>Return to page 1</button>
                 </div>
               </section>
             ) : null}
             {detail.snapshotRowCount > 0 && page?.page === requestedPage && pageError !== requestedPage ? (
-              <div ref={tableScrollerRef} className={styles.reportTableHost}>
-                <ReportTable detail={detail} page={page} />
+              <div className={styles.reportTableHost}>
+                <ReportTable
+                  detail={detail}
+                  page={page}
+                  scrollerRef={tableScrollerRef}
+                />
               </div>
             ) : null}
           </div>
-          <footer className={styles.reportFooter}>
+          <footer
+            className={styles.reportFooter}
+            ref={footerRef}
+            tabIndex={-1}
+          >
             <span>{detail.snapshotRowCount === 0 ? "0 rows · No pages" : footer}</span>
             {detail.snapshotRowCount ? (
               <div>
-                <button type="button" disabled={requestedPage <= 1 || loadingPage} onClick={() => onPage(requestedPage - 1)}>Previous page</button>
-                <button type="button" disabled={requestedPage >= pages || loadingPage} onClick={() => onPage(requestedPage + 1)}>Next page</button>
+                <button
+                  type="button"
+                  data-page-direction="previous"
+                  disabled={requestedPage <= 1 || loadingPage}
+                  onClick={() => {
+                    requestPage(requestedPage - 1, "previous");
+                  }}
+                >
+                  Previous page
+                </button>
+                <button
+                  type="button"
+                  data-page-direction="next"
+                  disabled={requestedPage >= pages || loadingPage}
+                  onClick={() => {
+                    requestPage(requestedPage + 1, "next");
+                  }}
+                >
+                  Next page
+                </button>
               </div>
             ) : null}
           </footer>
